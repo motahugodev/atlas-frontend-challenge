@@ -34,7 +34,7 @@ export default defineNuxtConfig({
         semi: false,
         singleQuote: true,
         tabWidth: 2,
-        trailingComma: 'none',
+        trailingComma: 'es5',
         printWidth: 100
       }
     }

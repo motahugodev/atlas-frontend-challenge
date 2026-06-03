@@ -20,6 +20,7 @@ export default withNuxt({
     ], // Força fechamento tag de forma consistente
     'vue/component-name-in-template-casing': ['error', 'PascalCase'], // Força <MeuComponente /> em vez de <meu-componente />
     'vue/next-tick-style': ['error', 'promise'], // Força uso de async/await com nextTick
+    'vue/comma-dangle': ['error', 'never'], // Exige vírgula no final de objetos/arrays multilinha
 
     // Accessibility
     'vuejs-accessibility/alt-text': 'error', // Força texto alternativo em imagens
@@ -29,12 +30,12 @@ export default withNuxt({
 
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }], // Proíbe variáveis declaradas e não usadas
     '@typescript-eslint/no-explicit-any': 'error', // Proíbe uso do tipo 'any' (força tipagem real)
-
+    '@stylistic/comma-dangle': ['error', 'never'], // Exige vírgula no final de objetos/arrays multilinha
     // Environment/Quality
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn', // Bloqueia console.log em produção
     'no-debugger': 'error', // Bloqueia debugger em qualquer ambiente
 
-    //   // Security & Performance
+    // Security & Performance
     'prefer-const': 'error', // Força const sempre que a variável não for reatribuída
     'no-var': 'error', // Bane o uso de 'var' definitivamente
     'eqeqeq': ['error', 'always'] // Força uso de === e !==
