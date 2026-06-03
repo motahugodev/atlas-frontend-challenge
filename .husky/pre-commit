@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Executa o lint-staged para validar os arquivos modificados
+npx lint-staged
