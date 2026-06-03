@@ -15,15 +15,14 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-01-15',
   a11y: {
-    // Exibe os relatórios diretamente no console do navegador (DevTools)
-    verbose: true,
+    enabled: true,
 
     // Define quais regras do Axe-core você quer validar
     // 'wcag2a' e 'wcag2aa' cobrem os padrões internacionais exigidos por lei
-    axeOptions: {
-      runOnly: {
-        type: 'tag',
-        values: ['wcag2a', 'wcag2aa', 'best-practice']
+    axe: {
+      options: {},
+      runOptions: {
+        runOnly: ['wcag2a', 'wcag2aa']
       }
     }
   },
@@ -32,12 +31,10 @@ export default defineNuxtConfig({
     config: {
       stylistic: {
         semi: false,
-        singleQuote: true,
-        tabWidth: 2,
-        trailingComma: 'es5',
-        printWidth: 100
+        quotes: 'single',
+        indent: 2
       }
-    }
-    // checker: true
+    },
+    checker: true
   }
 })

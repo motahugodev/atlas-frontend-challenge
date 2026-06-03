@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "nuxt typecheck",
-    "prepare": "husky"
+    "prepare": "husky && nuxt prepare"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.111",
