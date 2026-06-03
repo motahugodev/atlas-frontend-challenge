@@ -34,7 +34,6 @@ export default defineNuxtConfig({
         quotes: 'single',
         indent: 2
       }
-    },
-    checker: true
+    }
   }
 })
