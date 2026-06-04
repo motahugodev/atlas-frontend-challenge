@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import type { ProfessionalCard } from '~/types/index'
+import { formatCurrency } from '~/utils/currency'
 
 defineProps<{
   professional: ProfessionalCard
 }>()
-
-// Formatador nativo e performático para a moeda local
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(value)
-}
 </script>
 
 <template>
@@ -26,7 +19,10 @@ const formatCurrency = (value: number) => {
           width: '96',
           height: '96',
           loading: 'lazy',
-          decoding: 'async'
+          decoding: 'async',
+          format: 'webp',
+          fetchpriority: 'high'
+
         }"
       />
     </template>
@@ -50,14 +46,25 @@ const formatCurrency = (value: number) => {
     </div>
 
     <template #footer>
-      <UButton
-        block
-        color="primary"
-        variant="solid"
-        :aria-label="`Contratar serviço de ${professional.name}`"
+      <ProfessionalPreview
+        :id="professional.id"
+        :avatar="professional.avatar"
+        :name="professional.name"
+        :profession="professional.profession"
+        :description="professional.description"
+        :service-value="professional.serviceValue"
+        :reviews="professional.reviews"
+        :location="professional.location"
       >
-        Contratar
-      </UButton>
+        <UButton
+          block
+          color="primary"
+          variant="solid"
+          :aria-label="`Contratar serviço de ${professional.name}`"
+        >
+          Ver mais
+        </UButton>
+      </ProfessionalPreview>
     </template>
   </UCard>
 </template>

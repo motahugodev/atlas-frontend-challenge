@@ -8,7 +8,8 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
   const page = ref(options.initialPage || 1)
   const limit = ref(options.initialLimit || 12)
   const isMounted = ref(false) // 👈 Trava para evitar disparos antes da hora
-  const searchQuery = ref(route.query.search as string | undefined) // 👈 Esse estado vai comandar a busca da grid
+  const search = ref(route.query.search as string | undefined) // 👈 Esse estado vai comandar a busca da grid
+  const sort = ref(route.query.sort as string | undefined) // 👈 Estado para ordenação dinâmica
 
   // 1. Quando o componente monta no navegador, pegamos o valor REAL da URL
   onMounted(() => {
@@ -17,7 +18,10 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
     }
     // Garante que o searchQuery pegue o valor correto do SSR/Client-hydration
     if (route.query.search) {
-      searchQuery.value = route.query.search as string
+      search.value = route.query.search as string
+    }
+    if (route.query.sort) {
+      sort.value = route.query.sort as string
     }
 
     isMounted.value = true
@@ -27,23 +31,26 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
   const { data: response, pending, error, refresh, status, execute } = await useFetch<PaginatedResponse<T>>(url, {
     server: false,
     immediate: true, // 👈 Bloqueia a execução imediata automática no SSR
+    lazy: true,
     query: {
       page,
       limit,
-      search: searchQuery
+      search,
+      sort
     }
 
   })
 
   // Sincroniza parâmetros na URL
-  watch([page, searchQuery], ([newPage, newSearch]) => {
+  watch([page, search, sort], ([newPage, newSearch, newSort]) => {
     if (!isMounted.value) return
     const currentQuery = { ...route.query }
     router.push({
       query: {
         ...currentQuery,
         page: String(newPage),
-        search: newSearch || undefined
+        search: newSearch || undefined,
+        sort: newSort || undefined
       }
     })
   })
@@ -60,9 +67,17 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
 
       // Sincroniza a busca se ela mudou na URL externamente
       const nextSearch = newQuery.search as string | undefined
-      if (nextSearch !== searchQuery.value) {
-        searchQuery.value = nextSearch
-        if (page.value !== 1) return page.value = 1
+
+      if (nextSearch !== search.value) {
+        search.value = nextSearch
+        page.value = 1
+      }
+
+      // Sincroniza a ordenação se ela mudou na URL externamente
+      const nextSort = newQuery.sort as string | undefined
+      if (nextSort !== sort.value) {
+        sort.value = nextSort
+        page.value = 1
       }
     },
     { deep: true }
@@ -118,6 +133,7 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
     setPage,
     refresh,
     execute,
-    searchQuery
+    search,
+    sort
   }
 }

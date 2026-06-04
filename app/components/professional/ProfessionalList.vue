@@ -1,40 +1,60 @@
 <template>
-  <UContainer>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  <section>
+    <ul
+      v-if="status === 'pending' || status === 'idle' || professionals.length > 0"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+      aria-label="Lista de profissionais"
+    >
       <template v-if="status === 'pending' || status === 'idle'">
-        <ProfessionalCardSkeleton
+        <li
           v-for="index in 8"
           :key="`skeleton-professional-${index}`"
-        />
+        >
+          <ProfessionalCardSkeleton />
+        </li>
       </template>
-      <template v-else-if="status === 'success' && professionals.length > 0">
-        <ProfessionalCard
-          v-for="(professional, index) in professionals"
-          :key="`card-professional-${index}`"
-          :professional="professional"
-        />
+
+      <template v-else>
+        <li
+          v-for="professional in professionals"
+          :key="professional.id"
+        >
+          <ProfessionalCard :professional="professional" />
+        </li>
       </template>
+    </ul>
+    <div
+      v-else
+      class="flex justify-center items-center w-full min-h-[300px]"
+      role="alert"
+      aria-live="polite"
+    >
+      <UEmpty
+        :icon="status === 'error' ? 'i-lucide-alert-triangle' : 'i-lucide-file'"
+        :title="status === 'error' ? 'Erro ao carregar dados' : 'Nenhum profissional encontrado'"
+        :description="
+          status === 'error'
+            ? 'Ocorreu um erro ao carregar os profissionais. Por favor, tente novamente mais tarde.'
+            : 'Não encontramos nenhum profissional correspondente à sua busca.'
+        "
+      />
     </div>
-    <div v-if="status === 'error' || professionals.length === 0">
-      <div class="flex justify-center items-center w-full">
-        <UEmpty
-          icon="i-lucide-file"
-          title="Item não encontrado"
-          description="Ocorreu um erro ao carregar os profissionais. Por favor, tente novamente mais tarde."
-        />
-      </div>
-    </div>
-    <div class="flex justify-center my-8">
+    <div
+      v-if="$slots.footer"
+      class="flex justify-center my-8"
+    >
       <slot name="footer" />
     </div>
-  </UContainer>
+  </section>
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalCard } from '~/types/index'
+import type { ProfessionalCard, FetchStatus } from '~/types/index'
 
 defineProps<{
   professionals: ProfessionalCard[]
-  status: string
+  status: FetchStatus
 }>()
 </script>
+
+<style scoped></style>

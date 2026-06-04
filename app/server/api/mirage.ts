@@ -119,15 +119,38 @@ export function makeServer({ environment = 'development' } = {}) {
         const page = parseInt(typeof request.queryParams.page === 'string' ? request.queryParams.page : '1')
         const limit = parseInt(typeof request.queryParams.limit === 'string' ? request.queryParams.limit : '12')
         const search = typeof request.queryParams.search === 'string' ? request.queryParams.search.toLowerCase() : ''
-
-        // 1. Busca todos os registros do banco de dados fictício
+        const sort = String(request.queryParams.sort) || ''
         let allProfessionals = schema.all('professional').models
 
+        // 1. Busca todos os registros do banco de dados fictício
         if (search) {
           allProfessionals = allProfessionals.filter(p =>
             p.name.toLowerCase().includes(search)
             || p.profession.toLowerCase().includes(search)
           )
+        }
+
+        // 2. Aplica a ORDENAÇÃO dinâmica
+        if (sort) {
+          allProfessionals.sort((a, b) => {
+            switch (sort) {
+              case 'price_asc':
+                return a.serviceValue - b.serviceValue
+              case 'price_desc':
+                return b.serviceValue - a.serviceValue
+
+              case 'rating_desc':
+                // Se não tiver avaliação, assume 0 para ir para o fim
+                return (b.averageRating ?? 0) - (a.averageRating ?? 0)
+
+              case 'distance_asc':
+                // Se não tiver distância, assume Infinity para ir para o fim da lista
+                return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity)
+
+              default:
+                return 0
+            }
+          })
         }
 
         // 3. Calcula os índices de corte (fatiamento) do array
@@ -144,14 +167,18 @@ export function makeServer({ environment = 'development' } = {}) {
             totalRecords,
             totalPages,
             currentPage: page,
-            limit
+            limit,
+            sort
           },
           data: paginatedModels.map(p => ({
             id: p.id,
             name: p.name,
             profession: p.profession,
             avatar: p.avatar,
-            serviceValue: p.serviceValue
+            serviceValue: p.serviceValue,
+            description: p.description,
+            location: p.location,
+            reviews: p.reviews
           }))
         }
       })
@@ -159,6 +186,8 @@ export function makeServer({ environment = 'development' } = {}) {
       // GET /api/professionals/:id
       this.get('/professionals/:id', (schema, request) => {
         const id = String(request.params.id)
+        console.log('🚀 ~ makeServer ~ id:', id)
+
         const professional = schema.find('professional', id)
 
         if (!professional) {
@@ -180,7 +209,10 @@ export function makeServer({ environment = 'development' } = {}) {
           availability: professional.availability
         }
       })
+
+      this.namespace = ''
       this.passthrough('/_nuxt/**')
+      this.passthrough('/__nuxt_error')
       this.passthrough()
     }
   })

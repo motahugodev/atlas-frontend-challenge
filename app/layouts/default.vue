@@ -28,8 +28,6 @@ useSeoMeta({
         <NuxtLink to="/">
           <!-- <AppLogo class="w-auto h-6 shrink-0" /> -->
         </NuxtLink>
-
-        <TemplateMenu />
       </template>
 
       <template #right>
@@ -46,7 +44,7 @@ useSeoMeta({
     <UFooter>
       <template #left>
         <p class="text-sm text-muted">
-          Built with Nuxt UI • © {{ new Date().getFullYear() }}
+          Built with Hugo Mota • © {{ new Date().getFullYear() }}
         </p>
       </template>
 

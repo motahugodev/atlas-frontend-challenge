@@ -1,24 +1,28 @@
 <template>
   <NuxtLayout name="default">
-    <div>
-      <UPageHero
-        title="Nuxt Starter Template"
-        description="A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours."
-      >
-        <template #links>
-          <ProfessionalFilters
-            @select="onProfessionalSelect"
-            @search="onSearch"
-          />
-        </template>
-      </UPageHero>
+    <UPageHero
+      title="Nuxt Starter Template"
+      description="A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours."
+    >
+      <template #links>
+        <AAutoComplete
+          v-model:search="search"
+          @select="onProfessionalSelect"
+        />
+      </template>
+    </UPageHero>
+    <UContainer>
+      <ASortMenu
+        v-model:sort="sort"
+        class="mb-6"
+      />
       <ProfessionalList
         :professionals="professionals"
         :status="status"
       >
         <template #footer>
           <UPagination
-            v-if="meta.totalPages > 1"
+            v-if="meta.totalPages > 0"
             v-model:page="page"
             :total="meta.totalPages"
             :size="'lg'"
@@ -26,7 +30,7 @@
           />
         </template>
       </ProfessionalList>
-    </div>
+    </UContainer>
   </NuxtLayout>
 </template>
 
@@ -38,17 +42,12 @@ const {
   status,
   page,
   meta,
-  searchQuery,
-  refresh
+  search,
+  sort
 } = await usePagination<ProfessionalCard>('/api/professionals', { initialLimit: 12 })
 
 const onProfessionalSelect = (selected: AutocompleteItem) => {
   // Redireciona usando a função nativa do Nuxt 4 para a rota dinâmica do profissional
-  navigateTo(`/professionals/${selected.id}`)
-}
-
-const onSearch = async (query: string) => {
-  searchQuery.value = query
-  await refresh()
+  navigateTo(`/professional/${selected.id}`)
 }
 </script>

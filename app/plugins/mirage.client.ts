@@ -1,4 +1,4 @@
-import { makeServer } from '../utils/mirage'
+import { makeServer } from '~/server/api/mirage'
 
 export default defineNuxtPlugin(() => {
   if (import.meta.dev) {

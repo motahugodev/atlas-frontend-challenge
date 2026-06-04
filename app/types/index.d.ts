@@ -39,6 +39,10 @@ export interface ProfessionalCard {
   profession: string
   avatar: string
   serviceValue: number
+  description: string
+  location: Location
+  reviews: Review[]
+
 }
 
 export interface PaginatedResponse<T> {
@@ -61,3 +65,5 @@ export interface AutocompleteItem {
   name: string
   profession: string
 }
+
+export type FetchStatus = 'idle' | 'pending' | 'success' | 'error'
