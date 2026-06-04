@@ -7,7 +7,7 @@ export function useAutocomplete() {
   const isLoading = ref(false)
   const isOpen = ref(false)
 
-  let debounceTimeout: NodeJS.Timeout
+  let debounceTimeout: ReturnType<typeof setTimeout>
 
   watch(query, (newQuery) => {
     clearTimeout(debounceTimeout)
