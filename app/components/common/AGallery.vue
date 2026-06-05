@@ -46,7 +46,6 @@ function select(index: number) {
           width="320"
           height="320"
           class="rounded-lg"
-          loading="lazy"
           format="webp"
           fetchpriority="high"
           sizes="(max-width: 320px) 100vw, 1200px"
@@ -54,11 +53,14 @@ function select(index: number) {
       </UCarousel>
 
       <div class="flex gap-1 justify-between pt-4 max-w-xs mx-auto">
-        <div
+        <button
           v-for="(item, index) in items"
           :key="index"
-          class="size-11 opacity-25 hover:opacity-100 transition-opacity"
+          type="button"
+          class="size-11 opacity-25 hover:opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg"
           :class="{ 'opacity-100': activeIndex === index }"
+          :aria-label="`Ver foto ${index + 1}`"
+          :aria-pressed="activeIndex === index"
           @click="select(index)"
         >
           <NuxtImg
@@ -68,11 +70,10 @@ function select(index: number) {
             class="rounded-lg"
             loading="lazy"
             format="webp"
-            fetchpriority="high"
             sizes="(max-width: 68px) 100vw, 1200px"
-            alt="Foto do profissional"
+            :alt="`Miniatura da foto ${index + 1}`"
           />
-        </div>
+        </button>
       </div>
     </div>
   </UPageCard>

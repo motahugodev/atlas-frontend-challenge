@@ -2,9 +2,9 @@
 import type { AutocompleteItem } from '~/types/index'
 
 interface SuggestionItem {
-  value: string
-  label: string
-  description: string
+  value?: string
+  label?: string
+  suffix?: string
 }
 
 const props = withDefaults(
@@ -17,31 +17,43 @@ const emit = defineEmits<{
   (e: 'update:search', item: string): void
 }>()
 
-const { query, suggestions, isLoading, isOpen } = useAutocomplete()
+const { query, suggestions, isLoading } = useAutocomplete()
 
 const suggestionsCustom = computed(() => {
-  return suggestions.value?.map(item => ({
+  const items = suggestions.value?.map(item => ({
     value: item.id,
     label: item.name,
-    description: item.profession
+    suffix: item.profession
   })) || []
+
+  const group = suggestions.value?.map(item => ({
+    value: item.id,
+    label: item.profession
+  })).filter((item, index, self) =>
+    index === self.findIndex(obj => obj.label === item.label)
+  ) || []
+
+  return [{
+    id: 'category',
+    items: group,
+    ignoreFilter: true
+
+  }, {
+    id: 'users',
+    items,
+    ignoreFilter: true
+
+  }]
 })
 
-const handleSelect = (item: string): void => {
-  query.value = item
-  isOpen.value = false
-  emit('update:search', item)
-}
-
-const handleSelectAutocomplete = (item: SuggestionItem): void => {
-  isOpen.value = false
-
-  const selectedItem: AutocompleteItem = {
-    id: item.value,
-    name: item.label,
-    profession: item.description
+const handlerOption = async (currentQuery?: SuggestionItem) => {
+  if (!currentQuery) {
+    emit('update:search', query.value)
   }
-  emit('select', selectedItem)
+  else {
+    query.value = String(currentQuery)
+    emit('update:search', query.value)
+  }
 }
 
 watch(() => props.search, (newValue) => {
@@ -52,61 +64,32 @@ watch(() => props.search, (newValue) => {
 </script>
 
 <template>
-  <div class="w-full max-w-md mx-auto">
-    <ClientOnly>
-      <UPopover
-        v-model:open="isOpen"
-        mode="click"
-        :popper="{ placement: 'bottom-start', arrow: false }"
-        class="w-full"
-      >
-        <UInput
-          v-model="query"
-          type="text"
-          aria-label="Pesquisar"
-          placeholder="Pesquisar profissional ou indústria..."
-          size="lg"
-          class="w-full"
-          :loading="isLoading"
-          @focus="isOpen = suggestionsCustom.length > 0"
-          @keyup.enter="handleSelect(query)"
+  <UPageCard>
+    <UCommandPalette
+      v-model:search-term="query"
+      :groups="suggestionsCustom"
+      :loading="isLoading"
+      size="sm"
+      value-key="label"
+      placeholder="Digite para buscar..."
+      @update:model-value="event => handlerOption(event)"
+    >
+      <template #close>
+        <UTooltip
+          text="Pesquisar profissionais"
+          :content="{ side: 'right' }"
         >
-          <template #trailing>
-            <UTooltip
-              text="Pesquisar profissionais"
-              :content="{ side: 'right' }"
-            >
-              <UButton
-                color="success"
-                variant="link"
-                size="lg"
-                icon="i-heroicons-magnifying-glass"
-                aria-label="Pesquisar profissionais ou indústrias"
-                @click="handleSelect(query)"
-              />
-            </UTooltip>
-          </template>
-        </UInput>
-
-        <template #content>
-          <UListbox
-            v-if="suggestionsCustom.length > 0"
-            :value="query"
-            :items="suggestionsCustom"
-            class="size-full"
-            @update:model-value="handleSelectAutocomplete"
+          <UButton
+            color="success"
+            variant="solid"
+            size="lg"
+            icon="i-heroicons-magnifying-glass"
+            aria-label="Pesquisar profissionais ou indústrias"
+            class="mt-1.5"
+            @click="handlerOption()"
           />
-          <UEmpty
-            v-else
-            title="Nenhum item foi encontrado."
-            description="Tente ajustar sua busca para encontrar profissionais ou indústrias."
-          />
-        </template>
-      </UPopover>
-
-      <template #fallback>
-        <div class="w-full h-[44px] bg-default animate-pulse rounded-md" />
+        </UTooltip>
       </template>
-    </ClientOnly>
-  </div>
+    </UCommandPalette>
+  </UPageCard>
 </template>

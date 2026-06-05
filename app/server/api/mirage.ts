@@ -186,8 +186,6 @@ export function makeServer({ environment = 'development' } = {}) {
       // GET /api/professionals/:id
       this.get('/professionals/:id', (schema, request) => {
         const id = String(request.params.id)
-        console.log('🚀 ~ makeServer ~ id:', id)
-
         const professional = schema.find('professional', id)
 
         if (!professional) {

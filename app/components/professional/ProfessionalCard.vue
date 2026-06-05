@@ -18,11 +18,8 @@ defineProps<{
           src: professional.avatar,
           width: '96',
           height: '96',
-          loading: 'lazy',
           decoding: 'async',
-          format: 'webp',
-          fetchpriority: 'high'
-
+          format: 'webp'
         }"
       />
     </template>

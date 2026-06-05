@@ -8,7 +8,7 @@
     <UMarquee
       pause-on-hover
       :overlay="false"
-      :repeat="4"
+      :repeat="2"
       :ui="{ root: '[--gap:--spacing(4)]', content: 'w-auto py-1 overflow-hidden relative' }"
     >
       <UPageCard

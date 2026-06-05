@@ -3,14 +3,7 @@
     <UPageHero
       title="Nuxt Starter Template"
       description="A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours."
-    >
-      <template #links>
-        <AAutoComplete
-          v-model:search="search"
-          @select="onProfessionalSelect"
-        />
-      </template>
-    </UPageHero>
+    />
     <UContainer>
       <ASortMenu
         v-model:sort="sort"
@@ -35,7 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalCard, AutocompleteItem } from '~/types/index'
+import type { ProfessionalCard } from '~/types/index'
+import { useAutocompleteStore } from '~/stores/search'
+
+const store = useAutocompleteStore()
 
 const {
   items: professionals,
@@ -46,8 +42,8 @@ const {
   sort
 } = await usePagination<ProfessionalCard>('/api/professionals', { initialLimit: 12 })
 
-const onProfessionalSelect = (selected: AutocompleteItem) => {
-  // Redireciona usando a função nativa do Nuxt 4 para a rota dinâmica do profissional
-  navigateTo(`/professional/${selected.id}`)
-}
+watch(() => store.search, (name) => {
+  search.value = name
+  page.value = 1
+})
 </script>

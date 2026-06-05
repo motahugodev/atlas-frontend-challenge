@@ -46,6 +46,7 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
     if (!isMounted.value) return
     const currentQuery = { ...route.query }
     router.push({
+      name: 'index',
       query: {
         ...currentQuery,
         page: String(newPage),

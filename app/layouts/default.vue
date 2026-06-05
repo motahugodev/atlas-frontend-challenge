@@ -1,4 +1,16 @@
 <script setup>
+import { useAutocompleteStore } from '~/stores/search'
+
+const store = useAutocompleteStore()
+const router = useRouter()
+const isOpen = ref(false)
+
+const onSearch = (value) => {
+  store.search = value
+  isOpen.value = false
+  router.push({ name: 'index' })
+}
+
 useHead({
   meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
   link: [{ rel: 'icon', href: '/favicon.ico' }],
@@ -26,21 +38,36 @@ useSeoMeta({
     <UHeader>
       <template #left>
         <NuxtLink to="/">
-          <!-- <AppLogo class="w-auto h-6 shrink-0" /> -->
+          <h1>Atlas Service</h1>
         </NuxtLink>
       </template>
-
       <template #right>
+        <UModal v-model:open="isOpen">
+          <UButton
+            label="Buscar"
+            color="link"
+            variant="subtle"
+            icon="i-lucide-search"
+          />
+
+          <template #content>
+            <AAutoComplete
+              :search="store.search"
+              @update:open="isOpen = $event"
+              @update:search="onSearch"
+            />
+          </template>
+        </UModal>
         <UColorModeButton />
       </template>
     </UHeader>
-
+    <UContainer v-if="$route.name !== 'index'">
+      <ABreadcrump />
+    </UContainer>
     <UMain>
       <slot />
     </UMain>
-
     <USeparator icon="i-simple-icons-nuxtdotjs" />
-
     <UFooter>
       <template #left>
         <p class="text-sm text-muted">

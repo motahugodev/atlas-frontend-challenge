@@ -21,12 +21,17 @@
 
     <div class="flex flex-col gap-4">
       <div class="flex items-center gap-2">
-        <div class="flex items-center text-amber-500">
+        <div
+          class="flex items-center text-amber-500"
+          role="img"
+          :aria-label="`Avaliação: ${rating.toFixed(1)} de 5 estrelas`"
+        >
           <UIcon
             v-for="star in 5"
             :key="star"
             :name="star <= Math.round(rating) ? 'i-heroicons-star-20-solid' : 'i-heroicons-star-20'"
             class="w-5 h-5 flex-shrink-0"
+            aria-hidden="true"
           />
         </div>
 
@@ -35,7 +40,7 @@
         </span>
       </div>
       <UProgress
-        :model-value="rating > 5 ? 5 : rating.toFixed(0)"
+        :model-value="rating"
         :max="5"
         color="primary"
         size="sm"

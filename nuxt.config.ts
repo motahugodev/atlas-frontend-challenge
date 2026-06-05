@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/a11y', '@nuxt/image'],
+  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/a11y', '@nuxt/image', '@pinia/nuxt'],
   components: [
     {
       path: '~/components/common',
@@ -18,7 +18,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/': { prerender: true }
+    '/': { prerender: true },
+    '/professional/**': { swr: 3600 }
   },
 
   compatibilityDate: '2025-01-15',
@@ -42,6 +43,16 @@ export default defineNuxtConfig({
         quotes: 'single',
         indent: 2
       }
+    }
+  },
+
+  image: {
+    quality: 80,
+    format: ['webp', 'avif'],
+    screens: {
+      sm: 640,
+      md: 768,
+      lg: 1024
     }
   }
 })
