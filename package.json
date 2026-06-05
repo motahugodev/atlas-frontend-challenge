@@ -42,5 +42,8 @@
   "overrides": {
     "vue": "latest"
   },
-  "packageManager": "pnpm@11.5.0"
+  "packageManager": "pnpm@11.5.0",
+  "pnpm": {
+    "onlyBuiltDependencies": ["sharp"]
+  }
 }
