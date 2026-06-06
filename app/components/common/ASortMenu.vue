@@ -1,3 +1,40 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = withDefaults(defineProps<{
+  // Permite passar uma opção inicial selecionada
+  sort?: string
+}>(), {
+  sort: 'relevance'
+})
+
+// Emite o evento para o componente pai
+const emit = defineEmits<{
+  'update:sort': [value: string]
+}>()
+
+// Lista de opções
+const sortOptions = [
+  { icon: 'i-heroicons-sparkles', label: 'Relevância', value: 'relevance' },
+  { icon: 'i-heroicons-arrow-trending-down', label: 'Menor Preço', value: 'price_asc' },
+  { icon: 'i-heroicons-arrow-trending-up', label: 'Maior Preço', value: 'price_desc' },
+  { icon: 'i-heroicons-star', label: 'Melhor Avaliação', value: 'rating' },
+  { icon: 'i-heroicons-map-pin', label: 'Mais Próximo', value: 'distance' }
+]
+
+const sortName = computed(() => {
+  const option = sortOptions.find(opt => opt.value === props.sort)
+  return option ? option.label : 'Selecione uma opção'
+})
+
+const selectedOption = computed({
+  get: () => props.sort,
+  set: (value) => {
+    emit('update:sort', value)
+  }
+})
+</script>
+
 <template>
   <UPageCard>
     <div
@@ -25,38 +62,3 @@
     </div>
   </UPageCard>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-
-const props = withDefaults(defineProps<{
-  // Permite passar uma opção inicial selecionada
-  sort?: string
-}>(), {
-  sort: 'relevance'
-})
-
-// Lista de opções
-const sortOptions = [
-  { value: 'relevance', label: 'Relevância', icon: 'i-heroicons-sparkles' },
-  { value: 'price_asc', label: 'Menor Preço', icon: 'i-heroicons-arrow-trending-down' },
-  { value: 'price_desc', label: 'Maior Preço', icon: 'i-heroicons-arrow-trending-up' },
-  { value: 'rating', label: 'Melhor Avaliação', icon: 'i-heroicons-star' },
-  { value: 'distance', label: 'Mais Próximo', icon: 'i-heroicons-map-pin' }
-]
-
-// Emite o evento para o componente pai
-const emit = defineEmits(['update:sort'])
-
-const sortName = computed(() => {
-  const option = sortOptions.find(opt => opt.value === props.sort)
-  return option ? option.label : 'Selecione uma opção'
-})
-
-const selectedOption = computed({
-  get: () => props.sort,
-  set: (value) => {
-    emit('update:sort', value)
-  }
-})
-</script>

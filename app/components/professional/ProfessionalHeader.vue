@@ -24,7 +24,6 @@ defineProps<{
     </template>
     <template #links>
       <ul
-        role="list"
         aria-label="Serviços oferecidos"
         class="flex flex-wrap gap-2"
       >

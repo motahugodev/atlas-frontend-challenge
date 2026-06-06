@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { PaginatedResponse, UsePaginationOptions } from '~/types/index'
 
 export async function usePagination<T>(url: string, options: UsePaginationOptions = {}) {
@@ -11,39 +11,25 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
   const search = ref(route.query.search as string | undefined) // 👈 Esse estado vai comandar a busca da grid
   const sort = ref(route.query.sort as string | undefined) // 👈 Estado para ordenação dinâmica
 
-  // 1. Quando o componente monta no navegador, pegamos o valor REAL da URL
-  onMounted(() => {
-    if (route.query.page) {
-      page.value = Number(route.query.page)
-    }
-    // Garante que o searchQuery pegue o valor correto do SSR/Client-hydration
-    if (route.query.search) {
-      search.value = route.query.search as string
-    }
-    if (route.query.sort) {
-      sort.value = route.query.sort as string
-    }
-
-    isMounted.value = true
-  })
-
   // 2. O useFetch só vai disparar quando estiver no cliente E com a página correta definida
-  const { data: response, pending, error, refresh, status, execute } = await useFetch<PaginatedResponse<T>>(url, {
-    server: false,
+  const { data: response, error, execute, pending, refresh, status } = await useFetch<PaginatedResponse<T>>(url, {
     immediate: true, // 👈 Bloqueia a execução imediata automática no SSR
     lazy: true,
     query: {
-      page,
       limit,
+      page,
       search,
       sort
-    }
+    },
+    server: false
 
   })
 
   // Sincroniza parâmetros na URL
   watch([page, search, sort], ([newPage, newSearch, newSort]) => {
-    if (!isMounted.value) return
+    if (!isMounted.value) {
+      return
+    }
     const currentQuery = { ...route.query }
     router.push({
       name: 'index',
@@ -84,9 +70,25 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
     { deep: true }
   )
 
+  // 1. Quando o componente monta no navegador, pegamos o valor REAL da URL
+  onMounted(() => {
+    if (route.query.page) {
+      page.value = Number(route.query.page)
+    }
+    // Garante que o searchQuery pegue o valor correto do SSR/Client-hydration
+    if (route.query.search) {
+      search.value = route.query.search as string
+    }
+    if (route.query.sort) {
+      sort.value = route.query.sort as string
+    }
+
+    isMounted.value = true
+  })
+
   // Atalhos computados para facilitar o uso no template
   const items = computed(() => response.value?.data || [])
-  const meta = computed(() => response.value?.meta || { totalRecords: 0, totalPages: 1, currentPage: 1, limit: limit.value })
+  const meta = computed(() => response.value?.meta || { currentPage: 1, limit: limit.value, totalPages: 1, totalRecords: 0 })
 
   const hasNext = computed(() => page.value < meta.value.totalPages)
   const hasPrev = computed(() => page.value > 1)
@@ -115,26 +117,26 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
 
   const scrollToTop = () => {
     if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({ behavior: 'smooth', top: 0 })
     }
   }
 
   return {
-    page,
-    limit,
-    items,
-    meta,
-    status,
-    pending,
     error,
+    execute,
     hasNext,
     hasPrev,
+    items,
+    limit,
+    meta,
     nextPage,
+    page,
+    pending,
     prevPage,
-    setPage,
     refresh,
-    execute,
     search,
-    sort
+    setPage,
+    sort,
+    status
   }
 }

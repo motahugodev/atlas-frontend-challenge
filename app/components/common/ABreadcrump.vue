@@ -12,15 +12,15 @@ const breadcrumbItems = computed(() => {
   // Define o link inicial (Home)
   const items = [
     {
+      icon: 'i-heroicons-home', // Ícone opcional (certifique-se de ter o módulo de ícones ativo)
       label: 'Home',
-      to: '/',
-      icon: 'i-heroicons-home' // Ícone opcional (certifique-se de ter o módulo de ícones ativo)
+      to: '/'
     }
   ]
 
   // Monta o caminho incremental para cada pedaço da URL
   let currentPath = ''
-  pathArray.forEach((path, index) => {
+  pathArray.forEach((path) => {
     currentPath += `/${path}`
 
     // Formata o texto (ex: "projetos-ti" vira "Projetos Ti")
@@ -29,10 +29,10 @@ const breadcrumbItems = computed(() => {
       .replace(/\b\w/g, char => char.toUpperCase())
 
     items.push({
+      icon: '',
       label,
-      to: currentPath,
+      to: currentPath
       // Se for o último item, desabilitamos o link (opcional)
-      disabled: index === pathArray.length - 1
     })
   })
 

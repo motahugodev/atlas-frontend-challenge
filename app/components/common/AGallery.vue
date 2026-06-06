@@ -7,11 +7,11 @@ defineProps<{
 const carousel = useTemplateRef('carousel')
 const activeIndex = ref(0)
 
-function onClickPrev() {
-  activeIndex.value--
-}
 function onClickNext() {
   activeIndex.value++
+}
+function onClickPrev() {
+  activeIndex.value--
 }
 function onSelect(index: number) {
   activeIndex.value = index

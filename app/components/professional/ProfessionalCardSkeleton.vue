@@ -1,6 +1,3 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <UCard class="max-w-sm w-full transition-shadow hover:shadow-md">
     <template #header>

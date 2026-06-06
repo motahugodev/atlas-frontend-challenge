@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import type { Review } from '~/types'
+
+defineProps<{
+  reviews: Review[] | undefined
+}>()
+</script>
+
 <template>
   <UPageCard
     title="Avaliações"
@@ -31,11 +39,3 @@
     </Umarquee>
   </UPageCard>
 </template>
-
-<script setup lang="ts">
-import type { Review } from '~/types'
-
-defineProps<{
-  reviews: Review[] | undefined
-}>()
-</script>

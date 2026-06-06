@@ -1,3 +1,24 @@
+<script setup lang="ts">
+import type { ProfessionalCard } from '~/types/index'
+import { useAutocompleteStore } from '~/stores/search'
+
+const store = useAutocompleteStore()
+
+const {
+  items: professionals,
+  meta,
+  page,
+  search,
+  sort,
+  status
+} = await usePagination<ProfessionalCard>('/api/professionals', { initialLimit: 12 })
+
+watch(() => store.search, (name) => {
+  search.value = name
+  page.value = 1
+})
+</script>
+
 <template>
   <NuxtLayout name="default">
     <UPageHero
@@ -26,24 +47,3 @@
     </UContainer>
   </NuxtLayout>
 </template>
-
-<script setup lang="ts">
-import type { ProfessionalCard } from '~/types/index'
-import { useAutocompleteStore } from '~/stores/search'
-
-const store = useAutocompleteStore()
-
-const {
-  items: professionals,
-  status,
-  page,
-  meta,
-  search,
-  sort
-} = await usePagination<ProfessionalCard>('/api/professionals', { initialLimit: 12 })
-
-watch(() => store.search, (name) => {
-  search.value = name
-  page.value = 1
-})
-</script>

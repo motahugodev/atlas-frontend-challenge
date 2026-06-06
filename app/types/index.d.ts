@@ -1,65 +1,3 @@
-export interface FilterOptions {
-  search: string
-  profession: string
-  sortBy: string
-  page: number
-}
-
-export interface Review {
-  author: string
-  rating: number
-  comment: string
-}
-
-export interface Location {
-  city: string
-  state: string
-  coordinates?: string
-}
-
-export interface Professional {
-  id: string
-  name: string
-  profession: string
-  avatar: string // foto
-  serviceValue: number // valor do serviço prestado
-  description: string
-  averageRating?: number // avaliação média (opcional)
-  distanceKm?: number // distância (opcional)
-  providedServices: string[] // serviços prestados
-  photoGallery: string[] // galeria de fotos
-  reviews: Review[] // avaliações
-  location: Location // localização
-  availability: string[] // disponibilidade
-}
-
-export interface ProfessionalCard {
-  id: string
-  name: string
-  profession: string
-  avatar: string
-  serviceValue: number
-  description: string
-  location: Location
-  reviews: Review[]
-
-}
-
-export interface PaginatedResponse<T> {
-  meta: {
-    totalRecords: number
-    totalPages: number
-    currentPage: number
-    limit: number
-  }
-  data: T[]
-}
-
-export interface UsePaginationOptions {
-  initialPage?: number
-  initialLimit?: number
-}
-
 export interface AutocompleteItem {
   id: string
   name: string
@@ -67,3 +5,65 @@ export interface AutocompleteItem {
 }
 
 export type FetchStatus = 'idle' | 'pending' | 'success' | 'error'
+
+export interface FilterOptions {
+  page: number
+  profession: string
+  search: string
+  sortBy: string
+}
+
+export interface Location {
+  city: string
+  coordinates?: string
+  state: string
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  meta: {
+    totalRecords: number
+    totalPages: number
+    currentPage: number
+    limit: number
+  }
+}
+
+export interface Professional {
+  availability: string[] // disponibilidade
+  avatar: string // foto
+  averageRating?: number // avaliação média (opcional)
+  description: string
+  distanceKm?: number // distância (opcional)
+  id: string
+  location: Location // localização
+  name: string
+  photoGallery: string[] // galeria de fotos
+  profession: string
+  providedServices: string[] // serviços prestados
+  reviews: Review[] // avaliações
+  serviceValue: number // valor do serviço prestado
+}
+
+export interface ProfessionalCard {
+  avatar: string
+  description: string
+  id: string
+  location: Location
+  name: string
+  profession: string
+  reviews: Review[]
+  serviceValue: number
+
+}
+
+export interface Review {
+  author: string
+  comment: string
+  rating: number
+}
+
+export interface UsePaginationOptions {
+  initialLimit?: number
+  initialPage?: number
+}

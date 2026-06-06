@@ -1,22 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { useAutocompleteStore } from '~/stores/search'
 
 const store = useAutocompleteStore()
 const router = useRouter()
 const isOpen = ref(false)
 
-const onSearch = (value) => {
-  store.search = value
-  isOpen.value = false
-  router.push({ name: 'index' })
-}
-
 useHead({
-  meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
-  link: [{ rel: 'icon', href: '/favicon.ico' }],
   htmlAttrs: {
     lang: 'en'
-  }
+  },
+  link: [{ href: '/favicon.ico', rel: 'icon' }],
+  meta: [{ content: 'width=device-width, initial-scale=1', name: 'viewport' }]
 })
 
 const title = 'Nuxt Starter Template'
@@ -24,13 +18,19 @@ const description
   = 'A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.'
 
 useSeoMeta({
-  title,
   description,
-  ogTitle: title,
   ogDescription: description,
   ogImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
+  ogTitle: title,
+  title,
   twitterCard: 'summary_large_image'
 })
+
+const onSearch = (value: string) => {
+  store.search = value
+  isOpen.value = false
+  router.push({ name: 'index' })
+}
 </script>
 
 <template>

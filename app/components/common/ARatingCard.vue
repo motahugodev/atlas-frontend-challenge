@@ -1,3 +1,16 @@
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    rating?: number
+    totalReviews?: number
+  }>(),
+  {
+    rating: 0,
+    totalReviews: 0
+  }
+)
+</script>
+
 <template>
   <UCard
     class="max-w-sm min-w-1/4"
@@ -48,16 +61,3 @@
     </div>
   </UCard>
 </template>
-
-<script setup lang="ts">
-withDefaults(
-  defineProps<{
-    rating?: number
-    totalReviews?: number
-  }>(),
-  {
-    rating: 0,
-    totalReviews: 0
-  }
-)
-</script>

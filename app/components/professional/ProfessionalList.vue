@@ -1,3 +1,12 @@
+<script setup lang="ts">
+import type { FetchStatus, ProfessionalCard } from '~/types/index'
+
+defineProps<{
+  professionals: ProfessionalCard[]
+  status: FetchStatus
+}>()
+</script>
+
 <template>
   <section>
     <ul
@@ -47,14 +56,3 @@
     </div>
   </section>
 </template>
-
-<script setup lang="ts">
-import type { ProfessionalCard, FetchStatus } from '~/types/index'
-
-defineProps<{
-  professionals: ProfessionalCard[]
-  status: FetchStatus
-}>()
-</script>
-
-<style scoped></style>

@@ -6,17 +6,19 @@ export function useAutocomplete() {
   const query = ref<string>('')
   const apiQuery = ref<string>('')
 
-  const { data: suggestions, status, refresh } = useLazyFetch<AutocompleteItem[]>('/api/professionals/autocomplete', {
+  const { data: suggestions, refresh, status } = useLazyFetch<AutocompleteItem[]>('/api/professionals/autocomplete', {
+    immediate: false,
     key: 'autocomplete',
     query: { query: apiQuery },
-    immediate: false,
     server: false
 
   })
 
+  const isLoading = computed(() => status.value === 'pending')
+
   watchDebounced(
     query,
-    (newQuery) => {
+    (newQuery: string) => {
       if (!newQuery.trim()) {
         apiQuery.value = ''
         return
@@ -28,16 +30,14 @@ export function useAutocomplete() {
     { debounce: 500 }
   )
 
-  const isLoading = computed(() => status.value === 'pending')
-
   const reset = () => {
     query.value = ''
   }
 
   return {
-    query,
-    suggestions,
     isLoading,
-    reset
+    query,
+    reset,
+    suggestions
   }
 }

@@ -1,3 +1,25 @@
+<script setup lang="ts">
+import type { Location, Review } from '~/types'
+import { formatCurrency } from '~/utils/currency'
+
+interface Props {
+  avatar?: string
+  description: string
+  id: string
+  location: Location
+  name: string
+  profession: string
+  reviews: Review[]
+  serviceValue: number
+}
+
+withDefaults(defineProps<Props>(), {
+  avatar: ''
+})
+
+const isOpen = ref(false)
+</script>
+
 <template>
   <UDrawer
     v-model:open="isOpen"
@@ -92,25 +114,3 @@
     </template>
   </UDrawer>
 </template>
-
-<script setup lang="ts">
-import type { Location, Review } from '~/types'
-import { formatCurrency } from '~/utils/currency'
-
-interface Props {
-  id: string
-  avatar?: string
-  name: string
-  profession: string
-  description: string
-  serviceValue: number
-  reviews: Review[]
-  location: Location
-}
-
-withDefaults(defineProps<Props>(), {
-  avatar: ''
-})
-
-const isOpen = ref(false)
-</script>

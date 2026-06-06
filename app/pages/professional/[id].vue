@@ -1,3 +1,19 @@
+<script setup lang="ts">
+import type { Professional } from '~/types/index'
+
+const route = useRoute()
+
+const id = computed(() => route.params.id)
+
+const { data: professional, error, status } = await useFetch<Professional>(
+  () => `/api/professionals/${id.value}`,
+  {
+    key: `professional-${route.params.id}`,
+    server: false
+  }
+)
+</script>
+
 <template>
   <NuxtLayout name="default">
     <UPage>
@@ -19,19 +35,3 @@
     </UPage>
   </NuxtLayout>
 </template>
-
-<script setup lang="ts">
-import type { Professional } from '~/types/index'
-
-const route = useRoute()
-
-const id = computed(() => route.params.id)
-
-const { data: professional, status, error } = await useFetch<Professional>(
-  () => `/api/professionals/${id.value}`,
-  {
-    server: false,
-    key: `professional-${route.params.id}`
-  }
-)
-</script>

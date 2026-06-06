@@ -2,9 +2,9 @@
 import type { AutocompleteItem } from '~/types/index'
 
 interface SuggestionItem {
-  value?: string
   label?: string
   suffix?: string
+  value?: string
 }
 
 const props = withDefaults(
@@ -17,31 +17,31 @@ const emit = defineEmits<{
   (e: 'update:search', item: string): void
 }>()
 
-const { query, suggestions, isLoading } = useAutocomplete()
+const { isLoading, query, suggestions } = useAutocomplete()
 
 const suggestionsCustom = computed(() => {
   const items = suggestions.value?.map(item => ({
-    value: item.id,
     label: item.name,
-    suffix: item.profession
+    suffix: item.profession,
+    value: item.id
   })) || []
 
   const group = suggestions.value?.map(item => ({
-    value: item.id,
-    label: item.profession
+    label: item.profession,
+    value: item.id
   })).filter((item, index, self) =>
     index === self.findIndex(obj => obj.label === item.label)
   ) || []
 
   return [{
     id: 'category',
-    items: group,
-    ignoreFilter: true
+    ignoreFilter: true,
+    items: group
 
   }, {
     id: 'users',
-    items,
-    ignoreFilter: true
+    ignoreFilter: true,
+    items
 
   }]
 })
