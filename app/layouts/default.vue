@@ -45,7 +45,6 @@ const onSearch = (value: string) => {
         <UModal v-model:open="isOpen">
           <UButton
             label="Buscar"
-            color="link"
             variant="subtle"
             icon="i-lucide-search"
           />
