@@ -14,7 +14,7 @@ export function useAutocomplete() {
 
   })
 
-  const isLoading = computed(() => status.value === 'pending')
+  const isLoading = computed<boolean>(() => status.value === 'pending')
 
   watchDebounced(
     query,

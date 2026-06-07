@@ -2,25 +2,37 @@
 import withNuxt from './.nuxt/eslint.config.mjs'
 import vuejsAccessibility from 'eslint-plugin-vuejs-accessibility'
 import perfectionist from 'eslint-plugin-perfectionist'
+import vueParser from 'vue-eslint-parser'
+import tsParser from '@typescript-eslint/parser'
 
 export default withNuxt(
-  // ─── Bloco 1: Regras globais (Vue + Acessibilidade + JS) ────────────────────
   {
     plugins: {
-      'vuejs-accessibility': vuejsAccessibility
+      'vuejs-accessibility': vuejsAccessibility,
+    },
+
+    files: ['**/*.ts', '**/*.vue', '*/*.vue'],
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: tsParser,
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        extraFileExtensions: ['.vue'],
+      },
     },
 
     rules: {
       // ── Vue: Estrutura de arquivo ──────────────────────────────────────────
       'vue/block-order': ['error', {
-        order: ['script', 'template', 'style']
+        order: ['script', 'template', 'style'],
       }],
       'vue/padding-line-between-blocks': 'error',
       'vue/no-empty-component-block': 'error',
 
       // ── Vue: Script Setup & Macros ─────────────────────────────────────────
       'vue/define-macros-order': ['error', {
-        order: ['defineOptions', 'defineProps', 'defineEmits', 'defineSlots']
+        order: ['defineOptions', 'defineProps', 'defineEmits', 'defineSlots'],
       }],
       'vue/define-props-declaration': ['error', 'type-based'],
       'vue/define-emits-declaration': ['error', 'type-based'],
@@ -58,16 +70,16 @@ export default withNuxt(
           'OTHER_DIRECTIVES',
           'OTHER_ATTR',
           'EVENTS',
-          'CONTENT'
+          'CONTENT',
         ],
-        alphabetical: false
+        alphabetical: false,
       }],
       'vue/v-bind-style': 'error',
       'vue/v-on-style': 'error',
       'vue/v-slot-style': 'error',
       'vue/prefer-true-attribute-shorthand': 'error',
       'vue/html-self-closing': ['error', {
-        html: { void: 'always', normal: 'always', component: 'always' }
+        html: { void: 'always', normal: 'always', component: 'always' },
       }],
       'vue/html-quotes': ['error', 'double'],
       'vue/no-spaces-around-equal-signs-in-attribute': 'error',
@@ -107,101 +119,101 @@ export default withNuxt(
       'eqeqeq': ['error', 'always'],
 
       // ── Estilo / Formatação ────────────────────────────────────────────────
-      '@stylistic/comma-dangle': ['error', 'never']
-    }
+      '@stylistic/comma-dangle': ['error', 'never'],
+    },
   },
 
   // ─── Bloco 2: TypeScript — escopo apenas em .ts e .vue ──────────────────────
   {
-    files: ['**/*.ts', '**/*.vue'],
+    files: ['**/*.ts', '*/*.vue', '**/*.vue'],
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': ['error', {
         prefer: 'type-imports',
-        disallowTypeAnnotations: false
+        disallowTypeAnnotations: false,
       }],
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/array-type': ['error', { default: 'array' }],
-      '@typescript-eslint/consistent-type-definitions': ['error', 'interface']
-    }
+      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+    },
   },
 
   // ─── Bloco 3: Vue — ordem interna de componentes ────────────────────────────
   // Convenção interna do <script setup> (sequência esperada de cima para baixo):
 
   {
-    files: ['**/*.ts', '**/*.vue'],
+    files: ['**/*.ts', '**/*.vue', '*/*.vue'],
     plugins: { perfectionist },
     rules: {
       // Ordena os itens dentro de um import: import { b, a } → import { a, b }
       'perfectionist/sort-named-imports': ['error', {
         type: 'alphabetical',
         order: 'asc',
-        ignoreCase: true
+        ignoreCase: true,
       }],
 
       // Ordena as propriedades de interfaces e types TypeScript
       'perfectionist/sort-interfaces': ['error', {
         type: 'alphabetical',
         order: 'asc',
-        ignoreCase: true
+        ignoreCase: true,
       }],
 
       'perfectionist/sort-objects': ['error', {
         type: 'natural',
         order: 'asc',
-        ignoreCase: true
+        ignoreCase: true,
       }],
 
       'perfectionist/sort-exports': ['error', {
         type: 'natural',
         order: 'asc',
-        ignoreCase: true
+        ignoreCase: true,
       }],
       'perfectionist/sort-export-attributes': ['error', {
         type: 'natural',
         order: 'asc',
-        ignoreCase: true
+        ignoreCase: true,
       }],
       'perfectionist/sort-named-exports': ['error', {
         type: 'natural',
         order: 'asc',
-        ignoreCase: true
+        ignoreCase: true,
       }],
       'perfectionist/sort-modules': ['error', {
         type: 'natural',
         order: 'asc',
-        ignoreCase: true
-      }]
-    }
+        ignoreCase: true,
+      }],
+    },
   },
 
   // ─── Bloco 5: Páginas e Layouts — sem multi-word obrigatório ────────────────
   {
     files: [
       'app/pages/**/*.vue',
-      'app/layouts/**/*.vue'
+      'app/layouts/**/*.vue',
     ],
     rules: {
-      'vue/multi-word-component-names': 'off'
-    }
+      'vue/multi-word-component-names': 'off',
+    },
   },
 
   // ─── Bloco 6: Composables — inferência de tipo suficiente ───────────────────
   {
     files: ['app/composables/**/*.ts'],
     rules: {
-      '@typescript-eslint/explicit-function-return-type': 'off'
-    }
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
   },
 
   // ─── Bloco 8: Arquivos de configuração — sort-objects desativado ─────────────
   // Objetos de config têm ordem semântica intencional (ex: modules antes de css)
   {
-    files: ['nuxt.config.ts', '*.config.ts', '*.config.js'],
+    files: ['nuxt.config.ts', '*.config.ts', '*.config.js', 'app/server/api/mirage.ts'],
     rules: {
-      'perfectionist/sort-objects': 'off'
-    }
-  }
+      'perfectionist/sort-objects': 'off',
+    },
+  },
 )

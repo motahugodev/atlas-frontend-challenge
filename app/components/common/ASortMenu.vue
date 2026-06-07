@@ -22,7 +22,7 @@ const sortOptions = [
   { icon: 'i-heroicons-map-pin', label: 'Mais Próximo', value: 'distance' }
 ]
 
-const sortName = computed(() => {
+const sortName = computed<string>(() => {
   const option = sortOptions.find(opt => opt.value === props.sort)
   return option ? option.label : 'Selecione uma opção'
 })

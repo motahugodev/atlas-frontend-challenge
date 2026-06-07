@@ -13,6 +13,7 @@
     "prepare": "husky && nuxt prepare"
   },
   "dependencies": {
+    "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.111",
     "@iconify-json/simple-icons": "^1.2.84",
     "@nuxt/a11y": "1.0.0-alpha.1",
@@ -29,11 +30,13 @@
     "@nuxt/eslint": "^1.15.2",
     "eslint": "^10.4.1",
     "eslint-plugin-perfectionist": "^5.9.0",
+    "eslint-plugin-vue": "^10.9.2",
     "eslint-plugin-vuejs-accessibility": "^2.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
     "miragejs": "^0.1.48",
     "typescript": "^6.0.3",
+    "vue-eslint-parser": "^10.4.1",
     "vue-tsc": "^3.3.3"
   },
   "lint-staged": {

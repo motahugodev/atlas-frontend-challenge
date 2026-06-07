@@ -1,7 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
+  // Required for Mirage to intercept initial lifecycle hooks
+
   modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/a11y', '@nuxt/image', '@pinia/nuxt'],
+  plugins: [
+    { src: '~/plugins/mirage.client.ts', mode: 'client' }
+  ],
+  ssr: false,
   components: [
     {
       path: '~/components/common',
@@ -43,6 +49,13 @@ export default defineNuxtConfig({
         quotes: 'single',
         indent: 2
       }
+    }
+  },
+
+  icon: {
+    clientBundle: {
+      scan: true,
+      sizeLimitKb: 512
     }
   },
 

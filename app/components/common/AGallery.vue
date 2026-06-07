@@ -5,7 +5,7 @@ defineProps<{
 }>()
 
 const carousel = useTemplateRef('carousel')
-const activeIndex = ref(0)
+const activeIndex = ref<number>(0)
 
 function onClickNext() {
   activeIndex.value++

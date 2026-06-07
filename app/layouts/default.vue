@@ -3,7 +3,7 @@ import { useAutocompleteStore } from '~/stores/search'
 
 const store = useAutocompleteStore()
 const router = useRouter()
-const isOpen = ref(false)
+const isOpen = ref<boolean>(false)
 
 useHead({
   htmlAttrs: {
@@ -45,7 +45,7 @@ const onSearch = (value: string) => {
         <UModal v-model:open="isOpen">
           <UButton
             label="Buscar"
-            variant="subtle"
+            variant="ghost"
             icon="i-lucide-search"
           />
 

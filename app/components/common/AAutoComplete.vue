@@ -56,7 +56,7 @@ const handlerOption = async (currentQuery?: SuggestionItem) => {
   }
 }
 
-watch(() => props.search, (newValue) => {
+watch(() => props.search, (newValue: string) => {
   query.value = String(newValue)
 }, {
   immediate: true

@@ -1,15 +1,16 @@
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import type { PaginatedResponse, UsePaginationOptions } from '~/types/index'
+import { useRoute, useRouter } from 'vue-router'
 
 export async function usePagination<T>(url: string, options: UsePaginationOptions = {}) {
   const route = useRoute()
   const router = useRouter()
 
-  const page = ref(options.initialPage || 1)
-  const limit = ref(options.initialLimit || 12)
-  const isMounted = ref(false) // 👈 Trava para evitar disparos antes da hora
-  const search = ref(route.query.search as string | undefined) // 👈 Esse estado vai comandar a busca da grid
-  const sort = ref(route.query.sort as string | undefined) // 👈 Estado para ordenação dinâmica
+  const page = ref<number>(options.initialPage || 1)
+  const limit = ref<number>(options.initialLimit || 12)
+  const isMounted = ref<boolean>(false) // 👈 Trava para evitar disparos antes da hora
+  const search = ref<string | undefined>(route.query.search as string | undefined) // 👈 Esse estado vai comandar a busca da grid
+  const sort = ref<string | undefined>(route.query.sort as string | undefined) // 👈 Estado para ordenação dinâmica
 
   // 2. O useFetch só vai disparar quando estiver no cliente E com a página correta definida
   const { data: response, error, execute, pending, refresh, status } = await useFetch<PaginatedResponse<T>>(url, {
@@ -90,8 +91,8 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
   const items = computed(() => response.value?.data || [])
   const meta = computed(() => response.value?.meta || { currentPage: 1, limit: limit.value, totalPages: 1, totalRecords: 0 })
 
-  const hasNext = computed(() => page.value < meta.value.totalPages)
-  const hasPrev = computed(() => page.value > 1)
+  const hasNext = computed<boolean>(() => page.value < meta.value.totalPages)
+  const hasPrev = computed<boolean>(() => page.value > 1)
 
   // Métodos de navegação com travas de segurança
   const nextPage = () => {

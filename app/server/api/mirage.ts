@@ -80,6 +80,14 @@ export function makeServer({ environment = 'development' } = {}) {
       professional: ProfessionalModel
     },
 
+    seeds(server) {
+      // server.createList diz ao Mirage para rodar a factory "professional" 500 vezes
+      const professionals = 500
+      server.createList('professional', professionals)
+
+      console.log(`🎰 [MirageJS] 500 profiles successfully generated using Factories.`)
+    },
+
     routes() {
       this.namespace = 'api'
 
@@ -205,15 +213,9 @@ export function makeServer({ environment = 'development' } = {}) {
       this.passthrough('/_nuxt/**')
       this.passthrough('/__nuxt_error')
       this.passthrough()
-    },
+    }
 
     // 3. SEEDS (Onde invocamos a Factory para criar os 500 registros)
-    seeds(server) {
-      // server.createList diz ao Mirage para rodar a factory "professional" 500 vezes
-      const professionals = 500
-      server.createList('professional', professionals)
 
-      console.log(`🎰 [MirageJS] 500 profiles successfully generated using Factories.`)
-    }
   })
 }

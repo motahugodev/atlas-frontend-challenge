@@ -17,7 +17,7 @@ withDefaults(defineProps<Props>(), {
   avatar: ''
 })
 
-const isOpen = ref(false)
+const isOpen = ref<boolean>(false)
 </script>
 
 <template>

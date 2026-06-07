@@ -13,7 +13,7 @@ const {
   status
 } = await usePagination<ProfessionalCard>('/api/professionals', { initialLimit: 12 })
 
-watch(() => store.search, (name) => {
+watch(() => store.search, (name: string) => {
   search.value = name
   page.value = 1
 })
@@ -22,7 +22,7 @@ watch(() => store.search, (name) => {
 <template>
   <NuxtLayout name="default">
     <UPageHero
-      title="Nuxt Starter Template"
+      title="Encontre seu profissional"
       description="A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours."
     />
     <UContainer>
