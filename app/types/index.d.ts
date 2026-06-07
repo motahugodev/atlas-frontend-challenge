@@ -47,7 +47,9 @@ export interface Professional {
 
 export interface ProfessionalCard {
   avatar: string
+  averageRating: number // avaliação média (opcional)
   description: string
+  distanceKm?: number // distância (opcional)
   id: string
   location: Location
   name: string
