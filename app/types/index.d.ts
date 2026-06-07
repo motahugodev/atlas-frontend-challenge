@@ -32,7 +32,7 @@ export interface PaginatedResponse<T> {
 export interface Professional {
   availability: string[] // disponibilidade
   avatar: string // foto
-  averageRating?: number // avaliação média (opcional)
+  averageRating: number // avaliação média (opcional)
   description: string
   distanceKm?: number // distância (opcional)
   id: string
@@ -66,4 +66,27 @@ export interface Review {
 export interface UsePaginationOptions {
   initialLimit?: number
   initialPage?: number
+}
+
+export interface PaginationMeta {
+  currentPage: number
+  limit: number
+  totalPages: number
+  totalRecords: number
+}
+
+export interface PaginationState {
+  hasNext: ComputedRef<boolean>
+  hasPrev: ComputedRef<boolean>
+  items: ComputedRef<ProfessionalCard[]>
+  limit: Ref<number>
+  meta: ComputedRef<PaginationMeta>
+  nextPage: () => void
+  page: Ref<number>
+  prevPage: () => void
+  refresh: AsyncDataExecuteOptions
+  search: Ref<string | undefined>
+  setPage: (target: number) => void
+  sort?: Ref<string | undefined>
+  status: Ref<FetchStatus>
 }

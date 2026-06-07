@@ -26,7 +26,7 @@ useSeoMeta({
   twitterCard: 'summary_large_image'
 })
 
-const onSearch = (value: string) => {
+const onSearch = (value: string): void => {
   store.search = value
   isOpen.value = false
   router.push({ name: 'index' })
@@ -76,7 +76,7 @@ const onSearch = (value: string) => {
 
       <template #right>
         <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
+          to="https://github.com/motahugodev/atlas-frontend-challenge"
           target="_blank"
           icon="i-simple-icons-github"
           aria-label="GitHub"

@@ -12,7 +12,7 @@ defineProps<{
     class="flex flex-col gap-4 md:flex-row"
   >
     <ARatingCard
-      :rating="professional.serviceValue || 0"
+      :rating="professional.averageRating || 0"
       :total-reviews="professional.reviews?.length || 0"
     />
     <ACarouselReview

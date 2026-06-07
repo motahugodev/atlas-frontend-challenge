@@ -11,7 +11,7 @@ defineProps<{
     <div class="space-y-4">
       <UPageCard
         title="Localização"
-        :description="professional.location ? `${professional.location.city}, ${professional.location.state}` : 'Não informada'"
+        :description="professional.location ? `${professional.location.city}, ${professional.location.state} | ${professional.distanceKm} KM` : 'Não informada'"
         variant="soft"
         icon="i-heroicons-map-pin"
       />

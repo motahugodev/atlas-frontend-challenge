@@ -1,19 +1,18 @@
 import { computed, onMounted, ref, watch } from 'vue'
-import type { PaginatedResponse, UsePaginationOptions } from '~/types/index'
+import type { PaginatedResponse, PaginationMeta, PaginationState, ProfessionalCard, UsePaginationOptions } from '~/types/index'
 import { useRoute, useRouter } from 'vue-router'
 
-export async function usePagination<T>(url: string, options: UsePaginationOptions = {}) {
+export async function usePagination<T extends ProfessionalCard>(url: string, options: UsePaginationOptions = {}): Promise<PaginationState> {
   const route = useRoute()
   const router = useRouter()
 
   const page = ref<number>(options.initialPage || 1)
   const limit = ref<number>(options.initialLimit || 12)
-  const isMounted = ref<boolean>(false) // 👈 Trava para evitar disparos antes da hora
-  const search = ref<string | undefined>(route.query.search as string | undefined) // 👈 Esse estado vai comandar a busca da grid
-  const sort = ref<string | undefined>(route.query.sort as string | undefined) // 👈 Estado para ordenação dinâmica
+  const isMounted = ref<boolean>(false) //
+  const search = ref<string | undefined>(route.query.search as string | undefined)
+  const sort = ref<string | undefined>(route.query.sort as string | undefined)
 
-  // 2. O useFetch só vai disparar quando estiver no cliente E com a página correta definida
-  const { data: response, error, execute, pending, refresh, status } = await useFetch<PaginatedResponse<T>>(url, {
+  const { data: response, refresh, status } = await useFetch<PaginatedResponse<T>>(url, {
     immediate: true, // 👈 Bloqueia a execução imediata automática no SSR
     lazy: true,
     query: {
@@ -43,7 +42,6 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
     })
   })
 
-  // 4. Escuta se o usuário usou os botões Avançar/Voltar do navegador
   watch(
     () => route.query,
     (newQuery) => {
@@ -71,7 +69,6 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
     { deep: true }
   )
 
-  // 1. Quando o componente monta no navegador, pegamos o valor REAL da URL
   onMounted(() => {
     if (route.query.page) {
       page.value = Number(route.query.page)
@@ -87,9 +84,8 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
     isMounted.value = true
   })
 
-  // Atalhos computados para facilitar o uso no template
-  const items = computed(() => response.value?.data || [])
-  const meta = computed(() => response.value?.meta || { currentPage: 1, limit: limit.value, totalPages: 1, totalRecords: 0 })
+  const items = computed<ProfessionalCard[]>(() => response.value?.data || [])
+  const meta = computed<PaginationMeta>(() => response.value?.meta || { currentPage: 1, limit: limit.value, totalPages: 1, totalRecords: 0 })
 
   const hasNext = computed<boolean>(() => page.value < meta.value.totalPages)
   const hasPrev = computed<boolean>(() => page.value > 1)
@@ -123,8 +119,6 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
   }
 
   return {
-    error,
-    execute,
     hasNext,
     hasPrev,
     items,
@@ -132,7 +126,6 @@ export async function usePagination<T>(url: string, options: UsePaginationOption
     meta,
     nextPage,
     page,
-    pending,
     prevPage,
     refresh,
     search,

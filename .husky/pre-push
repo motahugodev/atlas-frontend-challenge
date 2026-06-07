@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Executa os testes antes do push para garantir que nada quebrou
+pnpm run test

@@ -1,4 +1,4 @@
-import { createServer, Factory, Model, Response } from 'miragejs'
+import { createServer, Factory, Model, Response, type Server } from 'miragejs'
 import type { ModelDefinition } from 'miragejs/-types'
 import type { Professional } from '~/types'
 import { faker } from '@faker-js/faker'
@@ -11,7 +11,7 @@ const professionsList = [
   'Makeup Artist', 'Massage Therapist', 'House Cleaner'
 ]
 
-export function makeServer({ environment = 'development' } = {}) {
+export function makeServer({ environment = 'development' }: { environment?: string } = {}): Server {
   return createServer({
     environment,
 
@@ -28,7 +28,7 @@ export function makeServer({ environment = 'development' } = {}) {
           return faker.image.avatar()
         },
         averageRating() {
-          return faker.helpers.maybe(() => faker.number.float({ max: 5.0, min: 4.0, multipleOf: 0.1 }))
+          return faker.number.float({ max: 5.0, min: 4.0, multipleOf: 0.1 })
         },
         description() {
           return faker.lorem.paragraph({ max: 3, min: 2 })
@@ -172,7 +172,9 @@ export function makeServer({ environment = 'development' } = {}) {
             name: p.name,
             profession: p.profession,
             reviews: p.reviews,
-            serviceValue: p.serviceValue
+            serviceValue: p.serviceValue,
+            averageRating: p.averageRating,
+            distanceKm: p.distanceKm
           })),
           meta: {
             currentPage: page,

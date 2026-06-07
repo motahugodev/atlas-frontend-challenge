@@ -13,7 +13,7 @@ const breadcrumbItems = computed(() => {
   const items = [
     {
       icon: 'i-heroicons-home', // Ícone opcional (certifique-se de ter o módulo de ícones ativo)
-      label: 'Home',
+      label: 'Página Inicial',
       to: '/'
     }
   ]

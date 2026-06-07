@@ -7,17 +7,17 @@ defineProps<{
 const carousel = useTemplateRef('carousel')
 const activeIndex = ref<number>(0)
 
-function onClickNext() {
+function onClickNext(): void {
   activeIndex.value++
 }
-function onClickPrev() {
+function onClickPrev(): void {
   activeIndex.value--
 }
-function onSelect(index: number) {
+function onSelect(index: number): void {
   activeIndex.value = index
 }
 
-function select(index: number) {
+function select(index: number): void {
   activeIndex.value = index
   carousel.value?.emblaApi?.scrollTo(index)
 }

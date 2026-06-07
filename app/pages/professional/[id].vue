@@ -22,7 +22,10 @@ const { data: professional, error, status } = await useFetch<Professional>(
       <UContainer v-if="status === 'pending'">
         <ProfessionalDetailSkeleton />
       </UContainer>
-      <ProfessionalError v-else-if="error" />
+      <AEmptyError
+        v-else-if="error"
+        :status="status"
+      />
       <UContainer v-else-if="status === 'success' && !!professional">
         <ProfessionalHeader :professional="professional" />
         <div class="flex md:flex-row flex-col-reverse justify-center gap-6">

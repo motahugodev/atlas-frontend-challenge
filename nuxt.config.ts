@@ -53,9 +53,24 @@ export default defineNuxtConfig({
   },
 
   icon: {
+    serverBundle: false,
     clientBundle: {
       scan: true,
-      sizeLimitKb: 512
+      sizeLimitKb: 512,
+      includeCustomCollections: true,
+      icons: [
+        'lucide:arrow-left',
+        'lucide:arrow-right',
+        'lucide:chevron-left',
+        'lucide:chevron-right',
+        'lucide:chevron-down',
+        'lucide:chevron-up',
+        'lucide:x',
+        'lucide:check',
+        'lucide:circle-check',
+        'lucide:info',
+        'lucide:triangle-alert'
+      ]
     }
   },
 

@@ -25,16 +25,36 @@ defineProps<{
     </template>
 
     <!-- Bloco de Conteúdo Textual -->
-    <div class="mt-4 w-full">
+    <div class="grid grid-cols-2 gap-2">
+      <div class="space-x-4 space-y-1">
+        <UBadge
+          color="primary"
+          variant="subtle"
+          size="sm"
+          class="font-bold"
+          icon="i-heroicons-star-20-solid"
+        >
+          {{ professional.averageRating.toFixed(1) }} / 5.0
+        </UBadge>
+        <UBadge
+          color="secondary"
+          variant="subtle"
+          size="sm"
+          class="font-bold"
+          icon="i-heroicons-map-pin"
+        >
+          {{ professional.distanceKm }} KM
+        </UBadge>
+      </div>
       <div
-        class="flex flex-col items-center justify-center"
+        class="flex flex-col items-end justify-start text-right"
         :aria-label="`Valor do serviço prestado: ${formatCurrency(professional.serviceValue)}`"
       >
         <span class="text-xs uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500">
           Valor do Serviço
         </span>
         <span
-          class="mt-1 text-2xl font-bold text-gray-900 dark:text-white"
+          class="mt-1 text-xl font-bold text-gray-900 dark:text-white"
           aria-hidden="true"
         >
           {{ formatCurrency(professional.serviceValue) }}

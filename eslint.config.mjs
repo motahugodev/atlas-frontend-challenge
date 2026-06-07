@@ -6,12 +6,13 @@ import vueParser from 'vue-eslint-parser'
 import tsParser from '@typescript-eslint/parser'
 
 export default withNuxt(
+  // ─── Bloco 1a: Vue — parser e regras exclusivos de .vue ─────────────────────
   {
+    files: ['**/*.vue'],
     plugins: {
       'vuejs-accessibility': vuejsAccessibility,
     },
 
-    files: ['**/*.ts', '**/*.vue', '*/*.vue'],
     languageOptions: {
       parser: vueParser,
       parserOptions: {
@@ -100,7 +101,25 @@ export default withNuxt(
       'vuejs-accessibility/anchor-has-content': 'error',
       'vuejs-accessibility/label-has-for': 'error',
       'vuejs-accessibility/no-autofocus': 'warn',
+    },
+  },
 
+  // ─── Bloco 1b: Parser TypeScript para arquivos .ts puros ────────────────────
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+  },
+
+  // ─── Bloco 1c: Qualidade de código — .ts e .vue ──────────────────────────────
+  {
+    files: ['**/*.ts', '**/*.vue'],
+    rules: {
       // ── Qualidade de código ────────────────────────────────────────────────
       'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
       'no-debugger': 'error',
@@ -109,7 +128,7 @@ export default withNuxt(
       'no-unneeded-ternary': 'error',
       'no-throw-literal': 'error',
       'no-return-assign': 'error',
-      'no-shadow': 'error',
+      'no-shadow': 'off',
       'no-useless-rename': 'error',
       'curly': ['error', 'all'],
       'dot-notation': 'error',
@@ -125,7 +144,7 @@ export default withNuxt(
 
   // ─── Bloco 2: TypeScript — escopo apenas em .ts e .vue ──────────────────────
   {
-    files: ['**/*.ts', '*/*.vue', '**/*.vue'],
+    files: ['**/*.ts', '**/*.vue'],
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'error',
@@ -136,14 +155,17 @@ export default withNuxt(
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/array-type': ['error', { default: 'array' }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+      '@typescript-eslint/no-shadow': 'error',
+      '@typescript-eslint/explicit-function-return-type': ['error', {
+        allowExpressions: true,
+        allowTypedFunctionExpressions: true,
+      }],
     },
   },
 
-  // ─── Bloco 3: Vue — ordem interna de componentes ────────────────────────────
-  // Convenção interna do <script setup> (sequência esperada de cima para baixo):
-
+  // ─── Bloco 3: Perfectionist — ordenação de imports/exports/interfaces ────────
   {
-    files: ['**/*.ts', '**/*.vue', '*/*.vue'],
+    files: ['**/*.ts', '**/*.vue'],
     plugins: { perfectionist },
     rules: {
       // Ordena os itens dentro de um import: import { b, a } → import { a, b }
@@ -171,17 +193,8 @@ export default withNuxt(
         order: 'asc',
         ignoreCase: true,
       }],
-      'perfectionist/sort-export-attributes': ['error', {
-        type: 'natural',
-        order: 'asc',
-        ignoreCase: true,
-      }],
+
       'perfectionist/sort-named-exports': ['error', {
-        type: 'natural',
-        order: 'asc',
-        ignoreCase: true,
-      }],
-      'perfectionist/sort-modules': ['error', {
         type: 'natural',
         order: 'asc',
         ignoreCase: true,

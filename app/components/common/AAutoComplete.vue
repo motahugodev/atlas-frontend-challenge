@@ -46,7 +46,7 @@ const suggestionsCustom = computed(() => {
   }]
 })
 
-const handlerOption = async (currentQuery?: SuggestionItem) => {
+const handlerOption = async (currentQuery?: SuggestionItem): Promise<void> => {
   if (!currentQuery) {
     emit('update:search', query.value)
   }
