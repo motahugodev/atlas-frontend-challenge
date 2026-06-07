@@ -5,6 +5,7 @@ import type { ProfessionalCard as ProfessionalCardType } from '~/types/index'
 
 const mockProfessional: ProfessionalCardType = {
   avatar: 'https://example.com/avatar.jpg',
+  averageRating: 4.5,
   description: 'Fotógrafa com 10 anos de experiência.',
   id: '1',
   location: { city: 'São Paulo', state: 'SP' },

@@ -5,6 +5,7 @@ import type { ProfessionalCard } from '~/types/index'
 
 const makeProfessional = (id: string): ProfessionalCard => ({
   avatar: `https://example.com/avatar${id}.jpg`,
+  averageRating: 4.0,
   description: 'Descrição do profissional.',
   id,
   location: { city: 'Rio de Janeiro', state: 'RJ' },

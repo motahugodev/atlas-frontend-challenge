@@ -6,6 +6,7 @@ import type { ProfessionalCard } from '~/types/index'
 const mockProfessionals: ProfessionalCard[] = [
   {
     avatar: 'https://example.com/avatar1.jpg',
+    averageRating: 4.5,
     description: 'Especialista em eventos.',
     id: '1',
     location: { city: 'São Paulo', state: 'SP' },
@@ -16,6 +17,7 @@ const mockProfessionals: ProfessionalCard[] = [
   },
   {
     avatar: 'https://example.com/avatar2.jpg',
+    averageRating: 4.2,
     description: 'Design gráfico criativo.',
     id: '2',
     location: { city: 'Belo Horizonte', state: 'MG' },
