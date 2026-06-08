@@ -3,6 +3,9 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+const breadcrumbLabel = useBreadcrumbLabel()
+
+const routeParamValues = computed(() => Object.values(route.params).map(String))
 
 // Mapeia as rotas dinamicamente
 const breadcrumbItems = computed(() => {
@@ -12,7 +15,7 @@ const breadcrumbItems = computed(() => {
   // Define o link inicial (Home)
   const items = [
     {
-      icon: 'i-heroicons-home', // Ícone opcional (certifique-se de ter o módulo de ícones ativo)
+      icon: 'i-heroicons-home',
       label: 'Página Inicial',
       to: '/'
     }
@@ -23,16 +26,15 @@ const breadcrumbItems = computed(() => {
   pathArray.forEach((path) => {
     currentPath += `/${path}`
 
-    // Formata o texto (ex: "projetos-ti" vira "Projetos Ti")
-    const label = path
-      .replace(/-/g, ' ')
-      .replace(/\b\w/g, char => char.toUpperCase())
+    const isDynamicParam = routeParamValues.value.includes(path)
+    const label = isDynamicParam && breadcrumbLabel.value
+      ? breadcrumbLabel.value
+      : path.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase())
 
     items.push({
       icon: '',
       label,
       to: currentPath
-      // Se for o último item, desabilitamos o link (opcional)
     })
   })
 
