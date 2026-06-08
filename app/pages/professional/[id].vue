@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Professional } from '~/types/index'
 
@@ -14,6 +14,16 @@ const { data: professional, error, status } = await useFetch<Professional>(
     server: false
   }
 )
+
+const breadcrumbLabel = useBreadcrumbLabel()
+
+watch(professional, (val) => {
+  breadcrumbLabel.value = val?.name ?? null
+}, { immediate: true })
+
+onUnmounted(() => {
+  breadcrumbLabel.value = null
+})
 </script>
 
 <template>

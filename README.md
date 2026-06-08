@@ -8,6 +8,40 @@
 
 Plataforma de busca e listagem de profissionais, desenvolvida como frontend challenge. SPA construída com Nuxt 4 (SSR desabilitado), com mock de API via MirageJS e foco em acessibilidade (WCAG).
 
+---
+
+## Índice
+
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Arquitetura](#arquitetura)
+- [Componentes](#componentes)
+- [Composables e Store](#composables-e-store)
+- [API Mock](#api-mock)
+- [Testes](#testes)
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação](#instalação)
+- [Comandos](#comandos)
+- [Docker](#docker)
+- [CI/CD](#cicd)
+- [Guia de Contribuição](#guia-de-contribuição)
+- [Uso de IA](#uso-de-ia)
+- [Autor](#autor)
+
+---
+
+## Funcionalidades
+
+- **Listagem paginada** de 500 profissionais gerados com Faker.js
+- **Busca com autocomplete** — debounce de 500ms, sincronizada com URL
+- **Ordenação** por relevância, preço (crescente/decrescente), avaliação e distância
+- **Drawer de preview rápido** — visualização sem sair da listagem
+- **Página de detalhes** — galeria de fotos, avaliações, serviços e sidebar de preço
+- **Breadcrumb dinâmico** — atualizado conforme a navegação
+- **Dark mode** — alternância via Nuxt Color Mode
+- **Acessibilidade** — WCAG2A e WCAG2AA validados por Axe-core
+
+---
 
 ## Tecnologias
 
@@ -19,20 +53,235 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
 | [Nuxt UI](https://ui.nuxt.com) + [TailwindCSS 4](https://tailwindcss.com) | UI e estilização |
 | [@vueuse/core](https://vueuse.org) | Composables utilitários |
 | [Vitest](https://vitest.dev) + [@nuxt/test-utils](https://nuxt.com/docs/getting-started/testing) | Testes unitários e de integração |
-| [MirageJS](https://miragejs.com) | Mock de API no client-side |
+| [MirageJS](https://miragejs.com) + [Faker.js](https://fakerjs.dev) | Mock de API no client-side |
 | [ESLint](https://eslint.org) + [Husky](https://typicode.github.io/husky) + [lint-staged](https://github.com/lint-staged/lint-staged) | Qualidade de código |
 | [@nuxt/a11y](https://github.com/nuxt-modules/a11y) | Acessibilidade (WCAG2A/2AA via Axe-core) |
+| [@nuxt/image](https://image.nuxt.com) | Otimização de imagens (webp/avif) |
+
+---
+
+## Arquitetura
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      Página (Vue)                       │
+│  pages/index.vue           pages/professional/[id].vue  │
+└───────────────────┬─────────────────────────────────────┘
+                    │ usa
+        ┌───────────▼────────────┐
+        │      Composables       │
+        │  useAutocomplete       │
+        │  usePagination         │
+        │  useBreadcrumbLabel    │
+        └───────────┬────────────┘
+                    │ chama
+        ┌───────────▼────────────┐      ┌──────────────────┐
+        │     useLazyFetch       │──────▶   MirageJS API   │
+        │  (Nuxt data fetching)  │      │  (client-side)   │
+        └────────────────────────┘      └──────────────────┘
+                    │
+        ┌───────────▼────────────┐
+        │    Pinia Store         │
+        │  useAutocompleteStore  │
+        │  (estado de busca)     │
+        └────────────────────────┘
+```
+
+### Separação de responsabilidades
+
+| Camada | Pasta | Função |
+|---|---|---|
+| Páginas | `app/pages/` | Orquestração, layout e fetch de dados |
+| Componentes comuns | `app/components/common/` (prefixo `A`) | UI reutilizável sem acoplamento de domínio |
+| Componentes de feature | `app/components/professional/` | UI específica do domínio de profissionais |
+| Composables | `app/composables/` | Lógica reativa reutilizável (busca, paginação) |
+| Store | `app/stores/` | Estado global compartilhado entre componentes |
+| Tipos | `app/types/` | Interfaces TypeScript centralizadas |
+| Utils | `app/utils/` | Funções puras sem efeitos colaterais |
+
+---
+
+## Componentes
+
+### Comuns (`app/components/common/`)
+
+| Componente | Responsabilidade | Usado em |
+|---|---|---|
+| `AAutoComplete.vue` | Modal de busca com command palette | `layouts/default.vue` |
+| `ABreadcrump.vue` | Breadcrumb dinâmico (home › nome) | `layouts/default.vue` |
+| `ACarouselReview.vue` | Carrossel de avaliações | `ProfessionalReviews.vue` |
+| `AEmptyError.vue` | Estado vazio ou mensagem de erro | `pages/index.vue` |
+| `AGallery.vue` | Grid de fotos | `pages/professional/[id].vue` |
+| `ARatingCard.vue` | Exibição de nota e estrelas | `ProfessionalCard.vue`, `ProfessionalHeader.vue` |
+| `ASortMenu.vue` | Dropdown de ordenação | `pages/index.vue` |
+
+### Profissionais (`app/components/professional/`)
+
+| Componente | Responsabilidade | Usado em |
+|---|---|---|
+| `ProfessionalCard.vue` | Card da listagem (avatar, nome, preço) | `ProfessionalList.vue` |
+| `ProfessionalCardSkeleton.vue` | Skeleton de carregamento do card | `ProfessionalList.vue` |
+| `ProfessionalDetailSkeleton.vue` | Skeleton da página de detalhes | `pages/professional/[id].vue` |
+| `ProfessionalHeader.vue` | Cabeçalho da página de detalhes | `pages/professional/[id].vue` |
+| `ProfessionalInfo.vue` | Descrição, localização e disponibilidade | `pages/professional/[id].vue` |
+| `ProfessionalList.vue` | Container da listagem com slot para paginação | `pages/index.vue` |
+| `ProfessionalPreview.vue` | Drawer de preview rápido | `pages/index.vue` |
+| `ProfessionalPricing.vue` | Sidebar de preço (sticky) | `pages/professional/[id].vue` |
+| `ProfessionalReviews.vue` | Seção de avaliações | `pages/professional/[id].vue` |
+
+---
+
+## Composables e Store
+
+### `useAutocomplete` (`app/composables/useAutocomplete.ts`)
+
+Gerencia a lógica de busca com autocomplete.
+
+- Debounce de **500ms** antes de chamar a API
+- Retorna sugestões agrupadas por nome e profissão
+- Integra com `useAutocompleteStore` para sincronizar o termo de busca
+
+### `usePagination` (`app/composables/usePagination.ts`)
+
+Controla a paginação da listagem.
+
+- Sincroniza `page` e `limit` como query params na URL
+- Valor padrão: `limit = 12`
+- Rola para o topo da página ao navegar entre páginas
+
+### `useBreadcrumbLabel` (`app/composables/useBreadcrumbLabel.ts`)
+
+Compartilha o label dinâmico do breadcrumb entre o layout e a página de detalhes.
+
+- Usa `useState` do Nuxt para estado SSR-safe
+- Atualizado pela página `professional/[id].vue` com o nome do profissional
+
+### `useAutocompleteStore` (`app/stores/search.ts`)
+
+Store Pinia com o estado global de busca.
+
+```ts
+// Estado
+search: string  // Termo de busca atual
+
+// Usado por: AAutoComplete.vue, pages/index.vue
+```
+
+---
+
+## API Mock
+
+A API é simulada no client-side com **MirageJS**, configurada em `app/plugins/mirage.client.ts` e `app/server/api/mirage.ts`. Os dados são gerados com **Faker.js** (500 profissionais).
+
+### Endpoints
+
+#### `GET /api/professionals`
+
+Lista paginada de profissionais.
+
+| Query param | Tipo | Descrição |
+|---|---|---|
+| `page` | number | Página atual (padrão: 1) |
+| `limit` | number | Itens por página (padrão: 12) |
+| `search` | string | Filtro por nome ou profissão |
+| `sort` | string | Ordenação: `price_asc`, `price_desc`, `rating_desc`, `distance_asc` |
+
+**Resposta:**
+```json
+{
+  "data": [...],
+  "meta": {
+    "totalRecords": 500,
+    "totalPages": 42,
+    "currentPage": 1,
+    "limit": 12
+  }
+}
+```
+
+#### `GET /api/professionals/autocomplete`
+
+Sugestões de busca (máximo 7 resultados).
+
+| Query param | Tipo | Descrição |
+|---|---|---|
+| `query` | string | Termo de busca (case-insensitive) |
+
+#### `GET /api/professionals/:id`
+
+Detalhes completos de um profissional. Retorna `404` se não encontrado.
+
+### Schema do profissional
+
+```ts
+interface Professional {
+  id: string
+  name: string
+  profession: string            // 10 categorias disponíveis
+  avatar: string
+  description: string
+  serviceValue: number          // 60–450 BRL, múltiplos de 10
+  location: { city: string; state: string }
+  distanceKm?: number           // 0.5–20 km (opcional)
+  averageRating: number         // 4.0–5.0
+  reviews: Review[]
+  photoGallery: string[]        // 1–4 imagens
+  providedServices: string[]    // 3 serviços
+  availability: string[]        // 3–5 dias da semana
+}
+```
+
+---
+
+## Testes
+
+**Framework**: Vitest + @nuxt/test-utils + happy-dom
+
+### Estratégia
+
+| Tipo | Pasta | O que testa |
+|---|---|---|
+| Unitário | `tests/unit/components/` | Renderização e comportamento de componentes isolados |
+| Unitário | `tests/unit/composables/` | Lógica dos composables com mocks de fetch |
+| Unitário | `tests/unit/utils/` | Funções puras (ex: formatação de moeda) |
+| Integração | `tests/integration/pages/` | Fluxo completo das páginas com navegação |
+
+### Executar testes
+
+```bash
+pnpm test             # Execução única
+pnpm test:watch       # Modo watch
+pnpm test:coverage    # Relatório HTML em coverage/
+```
+
+### Padrão dos testes
+
+Componentes são montados com `mountSuspended()` para compatibilidade com composables assíncronos do Nuxt. Mocks são feitos com `vi.mock()` para composables como `useLazyFetch`.
+
+```ts
+// Exemplo de teste de componente
+const wrapper = await mountSuspended(ProfessionalCard, {
+  props: { professional: mockProfessional }
+})
+expect(wrapper.text()).toContain(mockProfessional.name)
+```
+
+---
 
 ## Pré-requisitos
 
 - Node.js 22+
 - pnpm 11+
 
+---
+
 ## Instalação
 
 ```bash
 pnpm install
 ```
+
+---
 
 ## Comandos
 
@@ -50,6 +299,8 @@ pnpm lint:fix         # Corrigir automaticamente com ESLint
 pnpm typecheck        # Verificação de tipos TypeScript
 ```
 
+---
+
 ## Docker
 
 ```bash
@@ -62,25 +313,7 @@ docker run -p 3000:3000 atlas-frontend-challenge
 
 > Build multi-stage: estágio builder (Node 22 Alpine) + estágio runner mínimo. Aplicação exposta na porta `3000`.
 
-## Estrutura do projeto
-
-```
-app/
-├── components/
-│   ├── common/          # Componentes reutilizáveis
-│   └── professional/    # Componentes da feature de profissionais
-├── composables/         # useAutocomplete, usePagination, etc.
-├── layouts/             # Layouts de página
-├── pages/               # Roteamento (index, professional/[id])
-├── plugins/             # mirage.client.ts (mock de API)
-├── stores/              # search.ts (Pinia)
-├── types/               # Definições de tipos TypeScript
-└── utils/               # Funções utilitárias
-
-tests/
-├── unit/                # Testes unitários (components, composables, utils)
-└── integration/         # Testes de integração (pages)
-```
+---
 
 ## CI/CD
 
@@ -92,6 +325,63 @@ Pipeline GitHub Actions executado a cada push com as etapas:
 4. **Build** — build de produção
 5. **Docker** — build da imagem tagueada com o SHA do commit
 
+---
+
+## Guia de Contribuição
+
+### Fluxo de desenvolvimento
+
+1. Crie uma branch a partir de `main` com o padrão `tipo/descricao` (ex: `feat/add-filter`, `fix/pagination-bug`)
+2. Implemente a mudança e escreva os testes correspondentes
+3. Rode `pnpm lint:fix` e `pnpm typecheck` antes de commitar
+4. O hook de pre-push executa os testes automaticamente via Husky — certifique-se de que passam
+5. Abra um Pull Request para `main`
+
+### Padrão de nomenclatura
+
+| Contexto | Padrão | Exemplo |
+|---|---|---|
+| Componentes comuns | Prefixo `A` | `AAutoComplete.vue` |
+| Componentes de feature | Prefixo da feature | `ProfessionalCard.vue` |
+| Composables | Prefixo `use` | `useAutocomplete.ts` |
+| Stores Pinia | Prefixo `use` + sufixo `Store` | `useAutocompleteStore` |
+
+### Padrão de commits
+
+Mensagens em inglês com prefixo semântico:
+
+```
+feat: add distance filter to professionals list
+fix: correct pagination reset on search change
+refactor: extract rating logic to composable
+test: add unit tests for usePagination
+docs: update API mock documentation
+```
+
+---
+
+## Estrutura do projeto
+
+```
+app/
+├── components/
+│   ├── common/          # Componentes reutilizáveis (prefixo A)
+│   └── professional/    # Componentes da feature de profissionais
+├── composables/         # useAutocomplete, usePagination, useBreadcrumbLabel
+├── layouts/             # default.vue (header, footer, breadcrumb)
+├── pages/               # index.vue, professional/[id].vue
+├── plugins/             # mirage.client.ts (mock de API)
+├── stores/              # search.ts (Pinia)
+├── types/               # Interfaces TypeScript centralizadas
+└── utils/               # Funções puras (ex: formatação de moeda)
+
+tests/
+├── unit/                # Testes unitários (components, composables, utils)
+└── integration/         # Testes de integração (pages)
+```
+
+---
+
 ## Uso de IA
 
 Este projeto contou com o auxílio do [Claude](https://claude.ai) (Anthropic) para:
@@ -99,6 +389,8 @@ Este projeto contou com o auxílio do [Claude](https://claude.ai) (Anthropic) pa
 - Criação dos testes unitários e de integração
 - Criação de documentação
 - Revisão de código (code review)
+
+---
 
 ## Autor
 

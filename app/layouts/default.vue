@@ -13,9 +13,9 @@ useHead({
   meta: [{ content: 'width=device-width, initial-scale=1', name: 'viewport' }]
 })
 
-const title = 'Atlas Service'
+const title = 'Atlas Services'
 const description
-  = 'A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.'
+  = 'Soluções estratégicas, excelência técnica e dedicação para fazer o seu projeto ir mais longe.'
 
 useSeoMeta({
   description,
