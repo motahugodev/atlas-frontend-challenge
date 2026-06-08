@@ -2,8 +2,12 @@ allowBuilds:
   '@parcel/watcher': false
   '@tailwindcss/oxide': false
   esbuild: false
+  sharp: true
   unrs-resolver: false
   vue-demi: false
+
+overrides:
+  fuse.js: "7.4.1"
 
 packages:
   - 'app/*'

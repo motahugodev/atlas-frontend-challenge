@@ -1,64 +1,109 @@
-# Nuxt Starter Template
+# Atlas Frontend Challenge
 
-[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+[![Nuxt](https://img.shields.io/badge/Nuxt-4-00DC82?logo=nuxt&labelColor=020420)](https://nuxt.com)
+[![Vue](https://img.shields.io/badge/Vue-3-4FC08D?logo=vue.js&labelColor=020420)](https://vuejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&labelColor=020420)](https://www.typescriptlang.org)
+[![Vitest](https://img.shields.io/badge/Tested%20with-Vitest-6E9F18?logo=vitest&labelColor=020420)](https://vitest.dev)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss&labelColor=020420)](https://tailwindcss.com)
 
-Use this template to get started with [Nuxt UI](https://ui.nuxt.com) quickly.
+Plataforma de busca e listagem de profissionais, desenvolvida como frontend challenge. SPA construída com Nuxt 4 (SSR desabilitado), com mock de API via MirageJS e foco em acessibilidade (WCAG).
 
-- [Live demo](https://starter-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
 
-<a href="https://starter-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-    <img alt="Nuxt Starter Template" src="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png" width="830" height="466">
-  </picture>
-</a>
+## Tecnologias
 
-> The starter template for Vue is on https://github.com/nuxt-ui-templates/starter-vue.
+| Tecnologia | Descrição |
+|---|---|
+| [Nuxt 4](https://nuxt.com) + [Vue 3](https://vuejs.org) | Framework principal |
+| [TypeScript 6](https://www.typescriptlang.org) | Tipagem estática |
+| [Pinia](https://pinia.vuejs.org) | Gerenciamento de estado |
+| [Nuxt UI](https://ui.nuxt.com) + [TailwindCSS 4](https://tailwindcss.com) | UI e estilização |
+| [@vueuse/core](https://vueuse.org) | Composables utilitários |
+| [Vitest](https://vitest.dev) + [@nuxt/test-utils](https://nuxt.com/docs/getting-started/testing) | Testes unitários e de integração |
+| [MirageJS](https://miragejs.com) | Mock de API no client-side |
+| [ESLint](https://eslint.org) + [Husky](https://typicode.github.io/husky) + [lint-staged](https://github.com/lint-staged/lint-staged) | Qualidade de código |
+| [@nuxt/a11y](https://github.com/nuxt-modules/a11y) | Acessibilidade (WCAG2A/2AA via Axe-core) |
 
-## Quick Start
+## Pré-requisitos
 
-```bash [Terminal]
-npm create nuxt@latest -- -t ui
-```
+- Node.js 22+
+- pnpm 11+
 
-## Deploy your own
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=starter&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fstarter&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fstarter-dark.png&demo-url=https%3A%2F%2Fstarter-template.nuxt.dev%2F&demo-title=Nuxt%20Starter%20Template&demo-description=A%20minimal%20template%20to%20get%20started%20with%20Nuxt%20UI.)
-
-## Setup
-
-Make sure to install the dependencies:
+## Instalação
 
 ```bash
 pnpm install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+## Comandos
 
 ```bash
-pnpm dev
+pnpm dev              # Servidor de desenvolvimento em http://localhost:3000
+pnpm build            # Build de produção
+pnpm preview          # Preview do build de produção
+
+pnpm test             # Executar testes (vitest run)
+pnpm test:watch       # Testes em modo watch
+pnpm test:coverage    # Relatório de cobertura (HTML em coverage/)
+
+pnpm lint             # Verificar com ESLint
+pnpm lint:fix         # Corrigir automaticamente com ESLint
+pnpm typecheck        # Verificação de tipos TypeScript
 ```
 
-## Production
-
-Build the application for production:
+## Docker
 
 ```bash
-pnpm build
+# Build da imagem
+docker build -t atlas-frontend-challenge .
+
+# Executar o container
+docker run -p 3000:3000 atlas-frontend-challenge
 ```
 
-Locally preview production build:
+> Build multi-stage: estágio builder (Node 22 Alpine) + estágio runner mínimo. Aplicação exposta na porta `3000`.
 
-```bash
-pnpm preview
+## Estrutura do projeto
+
+```
+app/
+├── components/
+│   ├── common/          # Componentes reutilizáveis
+│   └── professional/    # Componentes da feature de profissionais
+├── composables/         # useAutocomplete, usePagination, etc.
+├── layouts/             # Layouts de página
+├── pages/               # Roteamento (index, professional/[id])
+├── plugins/             # mirage.client.ts (mock de API)
+├── stores/              # search.ts (Pinia)
+├── types/               # Definições de tipos TypeScript
+└── utils/               # Funções utilitárias
+
+tests/
+├── unit/                # Testes unitários (components, composables, utils)
+└── integration/         # Testes de integração (pages)
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## CI/CD
 
-## Renovate integration
+Pipeline GitHub Actions executado a cada push com as etapas:
 
-Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you are good to go.
+1. **Lint** — verificação de estilo com ESLint
+2. **Typecheck** — validação de tipos TypeScript
+3. **Test** — execução da suíte de testes
+4. **Build** — build de produção
+5. **Docker** — build da imagem tagueada com o SHA do commit
+
+## Uso de IA
+
+Este projeto contou com o auxílio do [Claude](https://claude.ai) (Anthropic) para:
+
+- Criação dos testes unitários e de integração
+- Criação de documentação
+- Revisão de código (code review)
+
+## Autor
+
+**Hugo Rodrigues Mota**
+
+- Email: [hugo.r.mota12@gmail.com](mailto:hugo.r.mota12@gmail.com)
+- GitHub: [github.com/motahugodev](https://github.com/motahugodev)
+- LinkedIn: [linkedin.com/in/hugo-mota](https://www.linkedin.com/in/hugo-mota/)
