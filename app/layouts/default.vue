@@ -13,7 +13,7 @@ useHead({
   meta: [{ content: 'width=device-width, initial-scale=1', name: 'viewport' }]
 })
 
-const title = 'Nuxt Starter Template'
+const title = 'Atlas Service'
 const description
   = 'A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.'
 
