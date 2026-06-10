@@ -11,6 +11,7 @@ const makeProfessional = (id: string): ProfessionalCard => ({
   location: { city: 'Rio de Janeiro', state: 'RJ' },
   name: `Profissional ${id}`,
   profession: 'Eletricista',
+  providedServices: [],
   reviews: [],
   serviceValue: 100 * Number(id)
 })
@@ -33,7 +34,7 @@ describe('ProfessionalList', () => {
     expect(list.exists()).toBe(true)
     // Renderiza 8 skeletons conforme a implementação
     const items = list.findAll('li')
-    expect(items).toHaveLength(8)
+    expect(items).toHaveLength(12)
   })
 
   it('exibe skeletons quando status é "idle"', async () => {

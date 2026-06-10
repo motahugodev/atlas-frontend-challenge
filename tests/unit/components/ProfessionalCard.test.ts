@@ -7,10 +7,12 @@ const mockProfessional: ProfessionalCardType = {
   avatar: 'https://example.com/avatar.jpg',
   averageRating: 4.5,
   description: 'Fotógrafa com 10 anos de experiência.',
+  distanceKm: 3,
   id: '1',
   location: { city: 'São Paulo', state: 'SP' },
   name: 'Ana Silva',
   profession: 'Fotógrafa Profissional',
+  providedServices: ['Ensaio Externo', 'Ensaio de Família'],
   reviews: [
     { author: 'João', comment: 'Excelente!', rating: 5 }
   ],
@@ -75,5 +77,38 @@ describe('ProfessionalCard', () => {
     })
     const btn = wrapper.find('[aria-label*="Ana Silva"]')
     expect(btn.exists()).toBe(true)
+  })
+
+  it('exibe os serviços prestados', async () => {
+    const wrapper = await mountSuspended(ProfessionalCard, {
+      props: { professional: mockProfessional }
+    })
+    expect(wrapper.text()).toContain('Ensaio Externo')
+    expect(wrapper.text()).toContain('Ensaio de Família')
+  })
+
+  it('lista de serviços tem aria-label acessível', async () => {
+    const wrapper = await mountSuspended(ProfessionalCard, {
+      props: { professional: mockProfessional }
+    })
+    const list = wrapper.find('[aria-label="Serviços prestados"]')
+    expect(list.exists()).toBe(true)
+  })
+
+  it('não exibe lista de serviços quando providedServices está vazio', async () => {
+    const wrapper = await mountSuspended(ProfessionalCard, {
+      props: { professional: { ...mockProfessional, providedServices: [] } }
+    })
+    const list = wrapper.find('[aria-label="Serviços prestados"]')
+    expect(list.exists()).toBe(false)
+  })
+
+  it('card tem role article com aria-label do profissional', async () => {
+    const wrapper = await mountSuspended(ProfessionalCard, {
+      props: { professional: mockProfessional }
+    })
+    const article = wrapper.find('article')
+    expect(article.exists()).toBe(true)
+    expect(article.attributes('aria-label')).toContain('Ana Silva')
   })
 })

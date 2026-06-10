@@ -16,7 +16,7 @@ defineProps<{
     >
       <template v-if="status === 'pending' || status === 'idle'">
         <li
-          v-for="index in 8"
+          v-for="index in 12"
           :key="`skeleton-professional-${index}`"
         >
           <ProfessionalCardSkeleton />
@@ -25,10 +25,13 @@ defineProps<{
 
       <template v-else>
         <li
-          v-for="professional in professionals"
+          v-for="(professional, index) in professionals"
           :key="professional.id"
         >
-          <ProfessionalCard :professional="professional" />
+          <ProfessionalCard
+            :professional="professional"
+            :priority="index < 4"
+          />
         </li>
       </template>
     </ul>

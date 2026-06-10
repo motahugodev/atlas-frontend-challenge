@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { PaginatedResponse, PaginationMeta, PaginationState, ProfessionalCard, UsePaginationOptions } from '~/types/index'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -6,9 +6,8 @@ export async function usePagination<T extends ProfessionalCard>(url: string, opt
   const route = useRoute()
   const router = useRouter()
 
-  const page = ref<number>(options.initialPage || 1)
+  const page = ref<number>(Number(route.query.page) || options.initialPage || 1)
   const limit = ref<number>(options.initialLimit || 12)
-  const isMounted = ref<boolean>(false) //
   const search = ref<string | undefined>(route.query.search as string | undefined)
   const sort = ref<string | undefined>(route.query.sort as string | undefined)
 
@@ -25,16 +24,19 @@ export async function usePagination<T extends ProfessionalCard>(url: string, opt
 
   })
 
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ behavior: 'smooth', top: 0 })
+    }
+  }
+
+  watch(page, () => scrollToTop())
+
   // Sincroniza parâmetros na URL
   watch([page, search, sort], ([newPage, newSearch, newSort]) => {
-    if (!isMounted.value) {
-      return
-    }
-    const currentQuery = { ...route.query }
-    router.push({
-      name: 'index',
+    router.replace({
       query: {
-        ...currentQuery,
+        ...route.query,
         page: String(newPage),
         search: newSearch || undefined,
         sort: newSort || undefined
@@ -69,21 +71,6 @@ export async function usePagination<T extends ProfessionalCard>(url: string, opt
     { deep: true }
   )
 
-  onMounted(() => {
-    if (route.query.page) {
-      page.value = Number(route.query.page)
-    }
-    // Garante que o searchQuery pegue o valor correto do SSR/Client-hydration
-    if (route.query.search) {
-      search.value = route.query.search as string
-    }
-    if (route.query.sort) {
-      sort.value = route.query.sort as string
-    }
-
-    isMounted.value = true
-  })
-
   const items = computed<ProfessionalCard[]>(() => response.value?.data || [])
   const meta = computed<PaginationMeta>(() => response.value?.meta || { currentPage: 1, limit: limit.value, totalPages: 1, totalRecords: 0 })
 
@@ -109,12 +96,6 @@ export async function usePagination<T extends ProfessionalCard>(url: string, opt
     if (targetPage >= 1 && targetPage <= meta.value.totalPages) {
       page.value = targetPage
       scrollToTop()
-    }
-  }
-
-  const scrollToTop = () => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ behavior: 'smooth', top: 0 })
     }
   }
 

@@ -20,6 +20,15 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true
   },
+  app: {
+    head: {
+      link: [
+        { rel: 'preconnect', href: 'https://avatars.githubusercontent.com' },
+        { rel: 'preconnect', href: 'https://cloudflare-ipfs.com' },
+        { rel: 'dns-prefetch', href: 'https://loremflickr.com' }
+      ]
+    }
+  },
 
   css: ['~/assets/css/main.css'],
 

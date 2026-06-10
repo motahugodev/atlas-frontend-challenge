@@ -85,6 +85,7 @@ export function makeServer({ environment = 'development' }: { environment?: stri
       const professionals = 500
       server.createList('professional', professionals)
 
+      // eslint-disable-next-line no-console
       console.log(`🎰 [MirageJS] 500 profiles successfully generated using Factories.`)
     },
 
@@ -174,7 +175,8 @@ export function makeServer({ environment = 'development' }: { environment?: stri
             reviews: p.reviews,
             serviceValue: p.serviceValue,
             averageRating: p.averageRating,
-            distanceKm: p.distanceKm
+            distanceKm: p.distanceKm,
+            providedServices: p.providedServices
           })),
           meta: {
             currentPage: page,
