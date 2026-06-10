@@ -23,11 +23,13 @@ watch(() => store.search, (name: string) => {
   <NuxtLayout name="default">
     <UPageHero
       title="Encontre seu profissional"
-      description="A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours."
+      description="Soluções estratégicas, excelência técnica e dedicação para fazer o seu projeto ir mais longe."
     />
     <UContainer>
       <ASortMenu
         v-model:sort="sort"
+        :current-page="meta.currentPage"
+        :total-pages="meta.totalPages"
         class="mb-6"
       />
       <ProfessionalList
@@ -38,7 +40,8 @@ watch(() => store.search, (name: string) => {
           <UPagination
             v-if="meta.totalPages > 0"
             v-model:page="page"
-            :total="meta.totalPages"
+            :total="meta.totalRecords"
+            :items-per-page="meta.limit"
             :size="'lg'"
             :aria-label="'Navegação de páginas'"
           />

@@ -4,17 +4,21 @@ import { formatCurrency } from '~/utils/currency'
 
 interface Props {
   avatar?: string
+  averageRating: number
   description: string
+  distanceKm?: number
   id: string
   location: Location
   name: string
   profession: string
+  providedServices: string[]
   reviews: Review[]
   serviceValue: number
 }
 
 withDefaults(defineProps<Props>(), {
-  avatar: ''
+  avatar: '',
+  distanceKm: undefined
 })
 
 const isOpen = ref<boolean>(false)
@@ -34,21 +38,47 @@ const isOpen = ref<boolean>(false)
       >
         <template #header>
           <div class="flex justify-between items-start sticky">
-            <UUser
-              :name="name"
-              :alt="`Nome do profissional: ${name}`"
-              :description="profession"
-              :avatar="{
-                src: avatar,
-                width: '96',
-                height: '96',
-                loading: 'lazy',
-                decoding: 'async',
-                format: 'webp',
-                fetchpriority: 'high'
-
-              }"
-            />
+            <div class="flex flex-1 justify-between items-center space-x-2">
+              <UUser
+                :name="name"
+                :description="profession"
+                :avatar="{
+                  src: avatar,
+                  alt: `Foto de perfil de ${name}`,
+                  width: '96',
+                  height: '96',
+                  decoding: 'async',
+                  format: 'webp'
+                }"
+              />
+              <div>
+                <div
+                  class="flex flex-col space-y-0.5"
+                  role="group"
+                  :aria-label="`Avaliação e distância de ${name}`"
+                >
+                  <UBadge
+                    color="warning"
+                    variant="subtle"
+                    size="sm"
+                    icon="i-heroicons-star-20-solid"
+                    :aria-label="`Avaliação média: ${averageRating.toFixed(1)} de 5`"
+                    class="w-fit"
+                  >
+                    {{ averageRating.toFixed(1) }}
+                  </UBadge>
+                  <UBadge
+                    color="info"
+                    variant="subtle"
+                    size="sm"
+                    icon="i-heroicons-map-pin"
+                    :aria-label="`Distância: ${distanceKm} quilômetros`"
+                  >
+                    {{ location ? `${location.city}, ${location.state} - ${distanceKm} ` : undefined }} KM
+                  </UBadge>
+                </div>
+              </div>
+            </div>
             <UButton
               variant="ghost"
               icon="i-heroicons-x-mark-20-solid"
@@ -61,12 +91,31 @@ const isOpen = ref<boolean>(false)
         <!-- CORPO: Detalhes, Localização e Avaliação -->
         <div class="space-y-4">
           <UPageCard
-            title="Localização"
-            :description="location ? `${location.city}, ${location.state}` : undefined"
+            title="Serviços"
             variant="soft"
-            icon="i-heroicons-map-pin"
+            icon="i-heroicons-document-text"
             class="w-full"
-          />
+          >
+            <ul
+              v-if="providedServices.length"
+              class="flex flex-wrap gap-2 list-none p-0 m-0"
+              aria-label="Serviços prestados"
+            >
+              <li
+                v-for="service in providedServices"
+                :key="service"
+              >
+                <UBadge
+                  color="neutral"
+                  variant="subtle"
+                  size="sm"
+                  class="font-bold"
+                >
+                  {{ service }}
+                </UBadge>
+              </li>
+            </ul>
+          </UPageCard>
           <UPageCard
             title="Descrição"
             :description="description"
@@ -74,6 +123,7 @@ const isOpen = ref<boolean>(false)
             icon="i-heroicons-document-text"
             class="w-full"
           />
+
           <ACarouselReview :reviews="reviews" />
         </div>
         <template #footer>

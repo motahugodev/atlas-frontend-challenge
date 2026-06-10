@@ -33,7 +33,19 @@ defineProps<{
             :name="review.author"
             :avatar="{ alt: review.author }"
             :ui="{ description: 'line-clamp-1 text-sm' }"
-          />
+          >
+            <template #description>
+              <UBadge
+                color="warning"
+                variant="subtle"
+                size="xs"
+                icon="i-heroicons-star-20-solid"
+                :aria-label="`Avaliação média: ${review.rating.toFixed(1)} de 5`"
+              >
+                {{ review.rating.toFixed(1) }}
+              </UBadge>
+            </template>
+          </UUser>
         </template>
       </UPageCard>
     </Umarquee>

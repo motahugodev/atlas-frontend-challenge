@@ -174,7 +174,8 @@ export function makeServer({ environment = 'development' }: { environment?: stri
             reviews: p.reviews,
             serviceValue: p.serviceValue,
             averageRating: p.averageRating,
-            distanceKm: p.distanceKm
+            distanceKm: p.distanceKm,
+            providedServices: p.providedServices
           })),
           meta: {
             currentPage: page,

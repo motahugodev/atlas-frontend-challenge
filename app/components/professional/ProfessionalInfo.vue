@@ -10,11 +10,31 @@ defineProps<{
   <section aria-label="Informações do profissional">
     <div class="space-y-4">
       <UPageCard
-        title="Localização"
-        :description="professional.location ? `${professional.location.city}, ${professional.location.state} | ${professional.distanceKm} KM` : 'Não informada'"
+        title="Serviços"
         variant="soft"
-        icon="i-heroicons-map-pin"
-      />
+        icon="i-heroicons-wrench-screwdriver"
+        class="w-full"
+      >
+        <ul
+          v-if="professional.providedServices.length"
+          class="flex flex-wrap gap-2 list-none p-0 m-0"
+          aria-label="Serviços prestados"
+        >
+          <li
+            v-for="service in professional.providedServices"
+            :key="service"
+          >
+            <UBadge
+              color="neutral"
+              variant="subtle"
+              size="sm"
+              class="font-bold"
+            >
+              {{ service }}
+            </UBadge>
+          </li>
+        </ul>
+      </UPageCard>
       <UPageCard
         title="Descrição"
         :description="professional.description"
