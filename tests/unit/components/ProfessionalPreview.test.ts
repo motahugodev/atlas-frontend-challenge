@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { nextTick } from 'vue'
 import ProfessionalPreview from '~/components/professional/ProfessionalPreview.vue'
 import type { Location, Review } from '~/types'
 
@@ -17,103 +18,95 @@ const mockProps = {
   serviceValue: 250
 }
 
+async function mountOpen(props = mockProps): Promise<ReturnType<typeof mountSuspended>> {
+  const wrapper = await mountSuspended(ProfessionalPreview, {
+    attachTo: document.body,
+    props,
+    slots: { default: '<button data-testid="open-drawer">Abrir</button>' }
+  })
+  await wrapper.find('[data-testid="open-drawer"]').trigger('click')
+  await nextTick()
+  return wrapper
+}
+
 describe('ProfessionalPreview', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
   it('renderiza sem erros', async () => {
     const wrapper = await mountSuspended(ProfessionalPreview, {
+      attachTo: document.body,
       props: mockProps
     })
     expect(wrapper.exists()).toBe(true)
   })
 
   it('exibe o nome do profissional', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    expect(wrapper.text()).toContain('Ana Silva')
+    await mountOpen()
+    expect(document.body.textContent).toContain('Ana Silva')
   })
 
   it('exibe a profissão', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    expect(wrapper.text()).toContain('Fotógrafa Profissional')
+    await mountOpen()
+    expect(document.body.textContent).toContain('Fotógrafa Profissional')
   })
 
   it('exibe a avaliação média formatada', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    expect(wrapper.text()).toContain('4.5')
+    await mountOpen()
+    expect(document.body.textContent).toContain('4.5')
   })
 
   it('badge de avaliação tem aria-label correto', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    const badge = wrapper.find('[aria-label*="Avaliação média"]')
-    expect(badge.exists()).toBe(true)
+    await mountOpen()
+    const badge = document.body.querySelector('[aria-label*="Avaliação média"]')
+    expect(badge).not.toBeNull()
   })
 
   it('exibe a distância em KM', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    expect(wrapper.text()).toContain('3')
-    expect(wrapper.text()).toContain('KM')
+    await mountOpen()
+    expect(document.body.textContent).toContain('3')
+    expect(document.body.textContent).toContain('KM')
   })
 
   it('badge de distância tem aria-label correto', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    const badge = wrapper.find('[aria-label*="Distância"]')
-    expect(badge.exists()).toBe(true)
+    await mountOpen()
+    const badge = document.body.querySelector('[aria-label*="Distância"]')
+    expect(badge).not.toBeNull()
   })
 
   it('exibe o valor do serviço formatado', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    expect(wrapper.text()).toContain('R$')
-    expect(wrapper.text()).toContain('250')
+    await mountOpen()
+    expect(document.body.textContent).toContain('R$')
+    expect(document.body.textContent).toContain('250')
   })
 
   it('exibe a localização', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    expect(wrapper.text()).toContain('São Paulo')
-    expect(wrapper.text()).toContain('SP')
+    await mountOpen()
+    expect(document.body.textContent).toContain('São Paulo')
+    expect(document.body.textContent).toContain('SP')
   })
 
   it('exibe a descrição', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    expect(wrapper.text()).toContain('Fotógrafa com 10 anos de experiência.')
+    await mountOpen()
+    expect(document.body.textContent).toContain('Fotógrafa com 10 anos de experiência.')
   })
 
   it('exibe os serviços prestados', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    expect(wrapper.text()).toContain('Ensaio Externo')
-    expect(wrapper.text()).toContain('Ensaio de Família')
+    await mountOpen()
+    expect(document.body.textContent).toContain('Ensaio Externo')
+    expect(document.body.textContent).toContain('Ensaio de Família')
   })
 
   it('lista de serviços tem aria-label acessível', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: mockProps
-    })
-    const list = wrapper.find('[aria-label="Serviços prestados"]')
-    expect(list.exists()).toBe(true)
+    await mountOpen()
+    const list = document.body.querySelector('[aria-label="Serviços prestados"]')
+    expect(list).not.toBeNull()
   })
 
   it('não exibe lista de serviços quando providedServices está vazio', async () => {
-    const wrapper = await mountSuspended(ProfessionalPreview, {
-      props: { ...mockProps, providedServices: [] }
-    })
-    const list = wrapper.find('[aria-label="Serviços prestados"]')
-    expect(list.exists()).toBe(false)
+    await mountOpen({ ...mockProps, providedServices: [] })
+    const list = document.body.querySelector('[aria-label="Serviços prestados"]')
+    expect(list).toBeNull()
   })
 })

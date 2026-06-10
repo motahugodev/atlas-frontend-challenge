@@ -12,6 +12,7 @@ const mockProfessionals: ProfessionalCard[] = [
     location: { city: 'São Paulo', state: 'SP' },
     name: 'Carlos Oliveira',
     profession: 'Fotógrafo',
+    providedServices: [],
     reviews: [],
     serviceValue: 300
   },
@@ -23,6 +24,7 @@ const mockProfessionals: ProfessionalCard[] = [
     location: { city: 'Belo Horizonte', state: 'MG' },
     name: 'Maria Santos',
     profession: 'Designer',
+    providedServices: [],
     reviews: [],
     serviceValue: 200
   }

@@ -30,7 +30,7 @@ describe('ASortMenu', () => {
 
   it('aria-label reflete o sort selecionado (rating)', async () => {
     const wrapper = await mountSuspended(ASortMenu, {
-      props: { sort: 'rating' }
+      props: { sort: 'rating_desc' }
     })
     const container = wrapper.find('[aria-label*="Melhor Avaliação"]')
     expect(container.exists()).toBe(true)
@@ -38,7 +38,7 @@ describe('ASortMenu', () => {
 
   it('aria-label reflete o sort selecionado (distance)', async () => {
     const wrapper = await mountSuspended(ASortMenu, {
-      props: { sort: 'distance' }
+      props: { sort: 'distance_asc' }
     })
     const container = wrapper.find('[aria-label*="Mais Próximo"]')
     expect(container.exists()).toBe(true)
