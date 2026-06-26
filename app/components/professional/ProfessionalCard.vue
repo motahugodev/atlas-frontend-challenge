@@ -25,12 +25,10 @@ const ProfessionalPreview = defineAsyncComponent(
             :avatar="{
               src: professional.avatar,
               alt: `Foto de perfil de ${professional.name}`,
-              width: '96',
-              height: '96',
-              decoding: 'async',
-              format: 'webp',
-              fetchpriority: props.priority ? 'high' : 'auto',
-              loading: props.priority ? 'eager' : 'lazy'
+              width: 80,
+              height: 80,
+              loading: props.priority ? 'eager' : 'lazy',
+              fetchpriority: props.priority ? 'high' : 'auto'
             }"
           />
           <div

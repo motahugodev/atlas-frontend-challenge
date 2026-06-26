@@ -45,10 +45,9 @@ const isOpen = ref<boolean>(false)
                 :avatar="{
                   src: avatar,
                   alt: `Foto de perfil de ${name}`,
-                  width: '96',
-                  height: '96',
-                  decoding: 'async',
-                  format: 'webp'
+                  width: 80,
+                  height: 80,
+                  loading: 'lazy'
                 }"
               />
               <div>

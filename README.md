@@ -6,7 +6,7 @@
 [![Vitest](https://img.shields.io/badge/Tested%20with-Vitest-6E9F18?logo=vitest&labelColor=020420)](https://vitest.dev)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss&labelColor=020420)](https://tailwindcss.com)
 
-Plataforma de busca e listagem de profissionais, desenvolvida como frontend challenge. SPA construída com Nuxt 4 (SSR desabilitado), com mock de API via MirageJS e foco em acessibilidade (WCAG).
+Plataforma de busca e listagem de profissionais, desenvolvida como frontend challenge. Construída com Nuxt 4 (SSR habilitado), API mock via Nitro server routes e foco em performance e acessibilidade (WCAG).
 
 ---
 
@@ -17,7 +17,8 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
 - [Arquitetura](#arquitetura)
 - [Componentes](#componentes)
 - [Composables e Store](#composables-e-store)
-- [API Mock](#api-mock)
+- [API](#api)
+- [Performance](#performance)
 - [Testes](#testes)
 - [Pré-requisitos](#pré-requisitos)
 - [Instalação](#instalação)
@@ -32,7 +33,7 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
 
 ## Funcionalidades
 
-- **Listagem paginada** de 500 profissionais gerados com Faker.js
+- **Listagem paginada** de 100 profissionais gerados com Faker.js (server-side)
 - **Busca com autocomplete** — debounce de 500ms, sincronizada com URL
 - **Ordenação** por relevância, preço (crescente/decrescente), avaliação e distância
 - **Drawer de preview rápido** — visualização sem sair da listagem
@@ -47,16 +48,18 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
 
 | Tecnologia | Descrição |
 |---|---|
-| [Nuxt 4](https://nuxt.com) + [Vue 3](https://vuejs.org) | Framework principal |
+| [Nuxt 4](https://nuxt.com) + [Vue 3](https://vuejs.org) | Framework principal com SSR habilitado |
 | [TypeScript 6](https://www.typescriptlang.org) | Tipagem estática |
+| [Nitro](https://nitro.build) | Server routes para API mock |
 | [Pinia](https://pinia.vuejs.org) | Gerenciamento de estado |
 | [Nuxt UI](https://ui.nuxt.com) + [TailwindCSS 4](https://tailwindcss.com) | UI e estilização |
+| [@nuxt/image](https://image.nuxt.com) | Otimização de imagens via IPX (WebP/AVIF, resize) |
+| [@nuxt/fonts](https://fonts.nuxt.com) | Auto-hospedagem de fontes com preload e subsetting |
 | [@vueuse/core](https://vueuse.org) | Composables utilitários |
+| [Faker.js](https://fakerjs.dev) | Geração de dados mock no servidor |
 | [Vitest](https://vitest.dev) + [@nuxt/test-utils](https://nuxt.com/docs/getting-started/testing) | Testes unitários e de integração |
-| [MirageJS](https://miragejs.com) + [Faker.js](https://fakerjs.dev) | Mock de API no client-side |
 | [ESLint](https://eslint.org) + [Husky](https://typicode.github.io/husky) + [lint-staged](https://github.com/lint-staged/lint-staged) | Qualidade de código |
 | [@nuxt/a11y](https://github.com/nuxt-modules/a11y) | Acessibilidade (WCAG2A/2AA via Axe-core) |
-| [@nuxt/image](https://image.nuxt.com) | Otimização de imagens (webp/avif) |
 
 ---
 
@@ -64,7 +67,7 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                      Página (Vue)                       │
+│                      Página (Vue / SSR)                  │
 │  pages/index.vue           pages/professional/[id].vue  │
 └───────────────────┬─────────────────────────────────────┘
                     │ usa
@@ -74,16 +77,20 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
         │  usePagination         │
         │  useBreadcrumbLabel    │
         └───────────┬────────────┘
-                    │ chama
-        ┌───────────▼────────────┐      ┌──────────────────┐
-        │     useLazyFetch       │──────▶   MirageJS API   │
-        │  (Nuxt data fetching)  │      │  (client-side)   │
-        └────────────────────────┘      └──────────────────┘
-                    │
+                    │ useFetch (SSR)
         ┌───────────▼────────────┐
-        │    Pinia Store         │
-        │  useAutocompleteStore  │
-        │  (estado de busca)     │
+        │   Nitro Server Routes  │
+        │  /api/professionals    │
+        │  /api/professionals/   │
+        │    autocomplete        │
+        │  /api/professionals/   │
+        │    :id                 │
+        └───────────┬────────────┘
+                    │ gerado na inicialização
+        ┌───────────▼────────────┐
+        │   server/data/         │
+        │   professionals.ts     │
+        │  (Faker.js, singleton) │
         └────────────────────────┘
 ```
 
@@ -91,13 +98,15 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
 
 | Camada | Pasta | Função |
 |---|---|---|
-| Páginas | `app/pages/` | Orquestração, layout e fetch de dados |
+| Páginas | `app/pages/` | Orquestração, layout e fetch de dados (SSR) |
 | Componentes comuns | `app/components/common/` (prefixo `A`) | UI reutilizável sem acoplamento de domínio |
 | Componentes de feature | `app/components/professional/` | UI específica do domínio de profissionais |
 | Composables | `app/composables/` | Lógica reativa reutilizável (busca, paginação) |
 | Store | `app/stores/` | Estado global compartilhado entre componentes |
 | Tipos | `app/types/` | Interfaces TypeScript centralizadas |
 | Utils | `app/utils/` | Funções puras sem efeitos colaterais |
+| Server routes | `server/api/` | Endpoints Nitro (GET professionals, autocomplete, :id) |
+| Server data | `server/data/` | Singleton Faker.js gerado na inicialização do servidor |
 
 ---
 
@@ -111,7 +120,7 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
 | `ABreadcrump.vue` | Breadcrumb dinâmico (home › nome) | `layouts/default.vue` |
 | `ACarouselReview.vue` | Carrossel de avaliações | `ProfessionalReviews.vue` |
 | `AEmptyError.vue` | Estado vazio ou mensagem de erro | `pages/index.vue` |
-| `AGallery.vue` | Grid de fotos | `pages/professional/[id].vue` |
+| `AGallery.vue` | Grid de fotos com `NuxtImg` otimizado | `pages/professional/[id].vue` |
 | `ARatingCard.vue` | Exibição de nota e estrelas | `ProfessionalCard.vue`, `ProfessionalHeader.vue` |
 | `ASortMenu.vue` | Dropdown de ordenação | `pages/index.vue` |
 
@@ -119,10 +128,10 @@ Plataforma de busca e listagem de profissionais, desenvolvida como frontend chal
 
 | Componente | Responsabilidade | Usado em |
 |---|---|---|
-| `ProfessionalCard.vue` | Card da listagem (avatar, nome, preço) | `ProfessionalList.vue` |
+| `ProfessionalCard.vue` | Card da listagem (avatar via UAvatar+NuxtImg, nome, preço) | `ProfessionalList.vue` |
 | `ProfessionalCardSkeleton.vue` | Skeleton de carregamento do card | `ProfessionalList.vue` |
 | `ProfessionalDetailSkeleton.vue` | Skeleton da página de detalhes | `pages/professional/[id].vue` |
-| `ProfessionalHeader.vue` | Cabeçalho da página de detalhes | `pages/professional/[id].vue` |
+| `ProfessionalHeader.vue` | Cabeçalho com avatar via `NuxtImg` | `pages/professional/[id].vue` |
 | `ProfessionalInfo.vue` | Descrição, localização e disponibilidade | `pages/professional/[id].vue` |
 | `ProfessionalList.vue` | Container da listagem com slot para paginação | `pages/index.vue` |
 | `ProfessionalPreview.vue` | Drawer de preview rápido | `pages/index.vue` |
@@ -145,7 +154,8 @@ Gerencia a lógica de busca com autocomplete.
 
 Controla a paginação da listagem.
 
-- Sincroniza `page` e `limit` como query params na URL
+- Sincroniza `page`, `limit`, `search` e `sort` como query params na URL
+- Fetch via SSR (`useFetch` sem `server: false`)
 - Valor padrão: `limit = 12`
 - Rola para o topo da página ao navegar entre páginas
 
@@ -169,9 +179,9 @@ search: string  // Termo de busca atual
 
 ---
 
-## API Mock
+## API
 
-A API é simulada no client-side com **MirageJS**, configurada em `app/plugins/mirage.client.ts` e `app/server/api/mirage.ts`. Os dados são gerados com **Faker.js** (500 profissionais).
+A API é implementada como **Nitro server routes** em `server/api/`. Os dados são gerados com **Faker.js** uma única vez na inicialização do servidor (`server/data/professionals.ts` — singleton) e mantidos em memória.
 
 ### Endpoints
 
@@ -191,8 +201,8 @@ Lista paginada de profissionais.
 {
   "data": [...],
   "meta": {
-    "totalRecords": 500,
-    "totalPages": 42,
+    "totalRecords": 100,
+    "totalPages": 9,
     "currentPage": 1,
     "limit": 12
   }
@@ -225,9 +235,72 @@ interface Professional {
   distanceKm?: number           // 0.5–20 km (opcional)
   averageRating: number         // 4.0–5.0
   reviews: Review[]
-  photoGallery: string[]        // 1–4 imagens
+  photoGallery: string[]        // 1–2 imagens
   providedServices: string[]    // 3 serviços
   availability: string[]        // 3–5 dias da semana
+}
+```
+
+> A variável de ambiente `MOCK_COUNT` controla o número de profissionais gerados (padrão: `100`).
+
+---
+
+## Performance
+
+Esta branch (`performance-improvement`) aplica um conjunto de otimizações baseadas em auditorias do Lighthouse 13.2.
+
+### Migração MirageJS → Nitro Server Routes
+
+O mock de API foi migrado de client-side (MirageJS) para server routes Nitro:
+
+- **Antes**: Faker.js rodava no browser, bloqueando a thread principal; SSR não funcionava pois o interceptor só existia no cliente
+- **Depois**: Dados gerados uma vez no servidor (singleton); `useFetch` sem `server: false` entrega dados já no HTML inicial
+
+### SSR com dados no HTML
+
+`useFetch` foi configurado para rodar no SSR (removido `server: false`), eliminando a requisição extra que o browser fazia após o hydration.
+
+### CSS inline (componentes Vue)
+
+`features.inlineStyles: true` injeta os estilos de componentes `.vue` diretamente no `<head>` do HTML, eliminando arquivos CSS externos de componentes.
+
+### Bundle JavaScript
+
+| Otimização | Configuração |
+|---|---|
+| Split de chunks | `manualChunks` separa `ui`, `vueuse` e `vendor` |
+| Target moderno | `vite.build.target: 'esnext'` + `vite.esbuild.target: 'esnext'` |
+| Ícones locais | `icon.serverBundle: 'local'` — sem requests à Iconify CDN em runtime |
+
+O `target: 'esnext'` elimina ~50 KiB de polyfills ES6 que o esbuild gerava ao transpilar `reka-ui` (adicionado a `build.transpile` pelo `@nuxt/ui`) com target antigo.
+
+### Fonte Public Sans
+
+| Otimização | Configuração |
+|---|---|
+| Preload | `fonts.defaults.preload: true` — `<link rel="preload">` emitido no `<head>` |
+| Subsetting | `fonts.defaults.subsets: ['latin']` — apenas glifos latinos (~10 KiB vs 26 KiB) |
+| Auto-hospedagem | `@nuxt/fonts` baixa e serve a fonte localmente via `/_fonts/` |
+
+O preload quebrou a cadeia de 3 hops (HTML → CSS → `.woff2`) reduzindo a latência de **1,385ms → 332ms**.
+
+### Imagens
+
+| Otimização | Detalhes |
+|---|---|
+| `NuxtImg` em avatars | `ProfessionalHeader` usa `NuxtImg` diretamente; `ProfessionalCard` e `ProfessionalPreview` passam `width/height` para `UUser` (que roteia via IPX) |
+| IPX proxy | Imagens externas (`i.pravatar.cc`, `avatars.githubusercontent.com`) são baixadas, redimensionadas e convertidas para WebP pelo servidor |
+| Cache longo | `/_ipx/**` configurado com `cache-control: public, max-age=31536000, immutable` |
+| `AGallery` | Usa `NuxtImg` com `sizes` corretas por slot (320px carousel, 44px thumbs) |
+| Lazy loading | Imagens fora do viewport com `loading="lazy"` e `decoding="async"` |
+
+### Route Rules (Nitro)
+
+```ts
+routeRules: {
+  '/':                { prerender: true },           // home pré-renderizada no build
+  '/professional/**': { swr: 3600 },                 // detalhe com stale-while-revalidate
+  '/_ipx/**':         { headers: { 'cache-control': 'public, max-age=31536000, immutable' } }
 }
 ```
 
@@ -256,7 +329,7 @@ pnpm test:coverage    # Relatório HTML em coverage/
 
 ### Padrão dos testes
 
-Componentes são montados com `mountSuspended()` para compatibilidade com composables assíncronos do Nuxt. Mocks são feitos com `vi.mock()` para composables como `useLazyFetch`.
+Componentes são montados com `mountSuspended()` para compatibilidade com composables assíncronos do Nuxt. Mocks são feitos com `vi.mock()` para composables como `useFetch`.
 
 ```ts
 // Exemplo de teste de componente
@@ -355,7 +428,8 @@ feat: add distance filter to professionals list
 fix: correct pagination reset on search change
 refactor: extract rating logic to composable
 test: add unit tests for usePagination
-docs: update API mock documentation
+docs: update API documentation
+perf: migrate mock API from MirageJS to Nitro server routes
 ```
 
 ---
@@ -370,10 +444,15 @@ app/
 ├── composables/         # useAutocomplete, usePagination, useBreadcrumbLabel
 ├── layouts/             # default.vue (header, footer, breadcrumb)
 ├── pages/               # index.vue, professional/[id].vue
-├── plugins/             # mirage.client.ts (mock de API)
 ├── stores/              # search.ts (Pinia)
 ├── types/               # Interfaces TypeScript centralizadas
 └── utils/               # Funções puras (ex: formatação de moeda)
+
+server/
+├── api/
+│   └── professionals/   # index.get.ts, [id].get.ts, autocomplete.get.ts
+└── data/
+    └── professionals.ts  # Singleton Faker.js (gerado 1x na inicialização)
 
 tests/
 ├── unit/                # Testes unitários (components, composables, utils)
@@ -387,8 +466,9 @@ tests/
 Este projeto contou com o auxílio do [Claude](https://claude.ai) (Anthropic) para:
 
 - Criação dos testes unitários e de integração
-- Criação de documentação
+- Criação e atualização de documentação
 - Revisão de código (code review)
+- Análise e implementação de melhorias de performance (Lighthouse)
 
 ---
 

@@ -13,13 +13,17 @@ defineProps<{
     class="mb-6"
   >
     <template #headline>
-      <UAvatar
+      <NuxtImg
         :src="professional.avatar"
         :alt="`Foto de ${professional.name}`"
-        size="2xl"
-        :width="96"
-        :height="96"
-        rounded="full"
+        width="192"
+        height="192"
+        format="webp"
+        quality="80"
+        sizes="96px"
+        class="rounded-full object-cover size-24"
+        loading="eager"
+        fetchpriority="high"
       />
     </template>
     <template #links>
