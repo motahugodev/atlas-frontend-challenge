@@ -50,10 +50,10 @@ export default defineNuxtConfig({
 
   vite: {
     esbuild: {
-      target: 'esnext'
+      target: 'es2022'
     },
     build: {
-      target: 'esnext',
+      target: 'es2022',
       rollupOptions: {
         output: {
           manualChunks(id) {
