@@ -19,11 +19,13 @@
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.84",
     "@nuxt/a11y": "1.0.0-alpha.1",
+    "@nuxt/fonts": "0.14.0",
     "@nuxt/image": "^2.0.0",
     "@nuxt/ui": "^4.8.1",
     "@pinia/nuxt": "^0.11.3",
     "@vueuse/core": "^14.3.0",
     "nuxt": "^4.4.6",
+    "nuxt-seo-utils": "8.3.1",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.3.0"
   },
@@ -54,15 +56,8 @@
     ]
   },
   "overrides": {
-    "vue": "latest"
+    "vue": "latest",
+    "fuse.js": "7.4.1"
   },
-  "packageManager": "pnpm@11.5.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp"
-    ],
-    "overrides": {
-      "fuse.js": "7.4.1"
-    }
-  }
+  "packageManager": "pnpm@11.5.0"
 }

@@ -1,30 +1,34 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
-  // Required for Mirage to intercept initial lifecycle hooks
 
-  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/a11y', '@nuxt/image', '@pinia/nuxt'],
-  plugins: [
-    { src: '~/plugins/mirage.client.ts', mode: 'client' }
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/ui',
+    '@nuxt/a11y',
+    '@nuxt/image',
+    '@pinia/nuxt',
+    'nuxt-seo-utils',
+    '@nuxt/fonts'
   ],
-  ssr: false,
+  ssr: true,
+
   components: [
     {
       path: '~/components/common',
       pathPrefix: false
     },
-
     '~/components'
   ],
 
   devtools: {
     enabled: true
   },
+
   app: {
     head: {
       link: [
         { rel: 'preconnect', href: 'https://avatars.githubusercontent.com' },
-        { rel: 'preconnect', href: 'https://cloudflare-ipfs.com' },
         { rel: 'dns-prefetch', href: 'https://loremflickr.com' }
       ]
     }
@@ -34,15 +38,42 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/': { prerender: true },
-    '/professional/**': { swr: 3600 }
+    '/professional/**': { swr: 3600 },
+    '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } }
+  },
+
+  features: {
+    inlineStyles: true
   },
 
   compatibilityDate: '2025-01-15',
+
+  vite: {
+    esbuild: {
+      target: 'esnext'
+    },
+    build: {
+      target: 'esnext',
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('@nuxt/ui') || id.includes('reka-ui')) {
+              return 'ui'
+            }
+            else if (id.includes('@vueuse')) {
+              return 'vueuse'
+            }
+            else if (id.includes('node_modules')) {
+              return 'vendor'
+            }
+          }
+        }
+      }
+    }
+  },
+
   a11y: {
     enabled: true,
-
-    // Define quais regras do Axe-core você quer validar
-    // 'wcag2a' e 'wcag2aa' cobrem os padrões internacionais exigidos por lei
     axe: {
       options: {},
       runOptions: {
@@ -61,8 +92,15 @@ export default defineNuxtConfig({
     }
   },
 
+  fonts: {
+    defaults: {
+      preload: true,
+      subsets: ['latin']
+    }
+  },
+
   icon: {
-    serverBundle: false,
+    serverBundle: 'local',
     clientBundle: {
       scan: true,
       sizeLimitKb: 512,
@@ -84,6 +122,7 @@ export default defineNuxtConfig({
   },
 
   image: {
+    domains: ['i.pravatar.cc', 'picsum.photos', 'avatars.githubusercontent.com'],
     quality: 80,
     format: ['webp', 'avif'],
     screens: {

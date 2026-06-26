@@ -47,8 +47,9 @@ function select(index: number): void {
           height="320"
           class="rounded-lg"
           format="webp"
-          fetchpriority="high"
-          sizes="(max-width: 320px) 100vw, 1200px"
+          loading="lazy"
+          decoding="async"
+          sizes="320px"
         />
       </UCarousel>
 
@@ -70,7 +71,7 @@ function select(index: number): void {
             class="rounded-lg"
             loading="lazy"
             format="webp"
-            sizes="(max-width: 68px) 100vw, 1200px"
+            sizes="44px"
             :alt="`Miniatura da foto ${index + 1}`"
           />
         </button>

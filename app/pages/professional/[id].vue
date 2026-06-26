@@ -10,8 +10,7 @@ const id = computed(() => route.params.id)
 const { data: professional, error, status } = await useFetch<Professional>(
   () => `/api/professionals/${id.value}`,
   {
-    key: `professional-${route.params.id}`,
-    server: false
+    key: `professional-${route.params.id}`
   }
 )
 
@@ -38,7 +37,7 @@ onUnmounted(() => {
       />
       <UContainer v-else-if="status === 'success' && !!professional">
         <ProfessionalHeader :professional="professional" />
-        <div class="flex md:flex-row flex-col-reverse justify-center gap-6">
+        <div class="flex flex-col-reverse md:flex-row justify-center gap-6">
           <div class="flex-1 space-y-4">
             <ProfessionalInfo :professional="professional" />
             <ProfessionalReviews :professional="professional" />

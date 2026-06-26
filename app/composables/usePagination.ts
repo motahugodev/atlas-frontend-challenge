@@ -12,16 +12,12 @@ export async function usePagination<T extends ProfessionalCard>(url: string, opt
   const sort = ref<string | undefined>(route.query.sort as string | undefined)
 
   const { data: response, refresh, status } = await useFetch<PaginatedResponse<T>>(url, {
-    immediate: true, // 👈 Bloqueia a execução imediata automática no SSR
-    lazy: true,
     query: {
       limit,
       page,
       search,
       sort
-    },
-    server: false
-
+    }
   })
 
   const scrollToTop = () => {
